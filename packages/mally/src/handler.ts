@@ -4,6 +4,7 @@ import type {
   MallyHandlerOptions,
   Middleware,
   CommandMetadata,
+  MessageAdapter,
 } from './types';
 
 /**
@@ -33,7 +34,7 @@ import type {
  * });
  * ```
  */
-export class MallyHandler<TClient = unknown> {
+export class MallyHandler<TClient = unknown, TMessage = unknown> {
   private readonly client: TClient;
   private readonly commandsDir: string;
   private readonly prefixResolver: string | ((ctx: { serverId?: string }) => string | Promise<string>);
@@ -41,14 +42,16 @@ export class MallyHandler<TClient = unknown> {
   private readonly middlewares: Middleware<TClient>[];
   private readonly registry: CommandRegistry<TClient>;
   private readonly cooldowns: Map<string, Map<string, number>> = new Map();
+  private readonly messageAdapter?: MessageAdapter<TMessage>;
 
-  constructor(options: MallyHandlerOptions<TClient>) {
+  constructor(options: MallyHandlerOptions<TClient, TMessage>) {
     this.client = options.client;
     this.commandsDir = options.commandsDir;
     this.prefixResolver = options.prefix;
     this.owners = new Set(options.owners ?? []);
     this.middlewares = options.middlewares ?? [];
     this.registry = new CommandRegistry<TClient>(options.extensions);
+    this.messageAdapter = options.messageAdapter;
   }
 
   /**
@@ -109,7 +112,57 @@ export class MallyHandler<TClient = unknown> {
   }
 
   /**
+   * Handle a message object using the configured message adapter
+   *
+   * @example
+   * ```ts
+   * // With message adapter configured
+   * client.on('messageCreate', (message) => {
+   *   handler.handle(message);
+   * });
+   * ```
+   */
+  async handle(message: TMessage): Promise<boolean> {
+    if (!this.messageAdapter) {
+      throw new Error(
+        'MessageAdapter is not configured. Either provide a messageAdapter in options or use handleMessage() with manual metadata.'
+      );
+    }
+
+    // Check if message should be processed
+    if (this.messageAdapter.shouldProcess && !this.messageAdapter.shouldProcess(message)) {
+      return false;
+    }
+
+    const rawContent = this.messageAdapter.getContent(message);
+    const authorId = this.messageAdapter.getAuthorId(message);
+    const channelId = this.messageAdapter.getChannelId(message);
+    const serverId = this.messageAdapter.getServerId?.(message);
+    const reply = this.messageAdapter.createReply(message);
+
+    return this.handleMessage(rawContent, message, {
+      authorId,
+      channelId,
+      serverId,
+      reply,
+    });
+  }
+
+  /**
    * Handle a raw message string with metadata
+   *
+   * @example
+   * ```ts
+   * // Manual usage without message adapter
+   * client.on('messageCreate', (message) => {
+   *   handler.handleMessage(message.content, message, {
+   *     authorId: message.author.id,
+   *     channelId: message.channel.id,
+   *     serverId: message.server?.id,
+   *     reply: (content) => message.channel.sendMessage(content),
+   *   });
+   * });
+   * ```
    */
   async handleMessage(
     rawContent: string,

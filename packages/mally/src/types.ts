@@ -101,14 +101,68 @@ export interface MallyCommand<TClient = unknown> {
 }
 
 /**
+ * Abstract base class for commands.
+ * Extend this class to create commands without boilerplate.
+ *
+ * @example
+ * ```ts
+ * @Command({ name: 'ping', description: 'Replies with Pong!' })
+ * export class PingCommand extends BaseCommand {
+ *   async run(ctx) {
+ *     await ctx.reply('Pong!');
+ *   }
+ * }
+ * ```
+ */
+export abstract class BaseCommand<TClient = unknown> implements MallyCommand<TClient> {
+  /** Command metadata (injected by registry) */
+  metadata!: CommandMetadata;
+
+  /** Typed context for use in subclasses */
+  protected ctx!: CommandContext<TClient>;
+
+  /**
+   * Execute the command - must be implemented by subclasses
+   */
+  abstract run(ctx: CommandContext<TClient>): Promise<void>;
+
+  /**
+   * Optional: Called when an error occurs during command execution.
+   * Override this method to provide custom error handling.
+   */
+  async onError(ctx: CommandContext<TClient>, error: Error): Promise<void> {
+    await ctx.reply(`An error occurred: ${error.message}`);
+  }
+}
+
+/**
  * Constructor type for command classes
  */
 export type CommandConstructor<TClient = unknown> = new () => MallyCommand<TClient>;
 
 /**
+ * Message adapter to extract data from platform-specific message objects
+ * @template TMessage - The platform-specific message type
+ */
+export interface MessageAdapter<TMessage = unknown> {
+  /** Extract raw message content */
+  getContent(message: TMessage): string;
+  /** Extract author ID */
+  getAuthorId(message: TMessage): string;
+  /** Extract channel ID */
+  getChannelId(message: TMessage): string;
+  /** Extract server/guild ID (optional) */
+  getServerId?(message: TMessage): string | undefined;
+  /** Create a reply function for the message */
+  createReply(message: TMessage): (content: string) => Promise<void>;
+  /** Check if the message should be processed (e.g., skip bot messages) */
+  shouldProcess?(message: TMessage): boolean;
+}
+
+/**
  * Handler options
  */
-export interface MallyHandlerOptions<TClient = unknown> {
+export interface MallyHandlerOptions<TClient = unknown, TMessage = unknown> {
   /** The Stoat client instance */
   client: TClient;
   /** Directory to scan for commands (absolute path) */
@@ -121,6 +175,8 @@ export interface MallyHandlerOptions<TClient = unknown> {
   middlewares?: Middleware<TClient>[];
   /** File extensions to load (default: ['.js', '.ts']) */
   extensions?: string[];
+  /** Message adapter for automatic message parsing */
+  messageAdapter?: MessageAdapter<TMessage>;
 }
 
 
