@@ -6,3 +6,4 @@ A monorepo project containing a bot for the Stoat platform and its documentation
 
 - **apps/bot** - The main bot application for the Stoat platform
 - **apps/docs** - Documentation for the bot
+- **packages** - Shared packages and utilities used across the monorepo
