@@ -1,6 +1,7 @@
+import 'reflect-metadata';
 import {CommandRegistry, RegisteredCommand} from './registry';
 import type {CommandContext, CommandMetadata, MallyHandlerOptions, } from './types';
-import {Client} from "stoat.js";
+import {Client, Message} from "stoat.js";
 
 /**
  * MallyHandler - The execution engine for commands
@@ -57,7 +58,7 @@ export class MallyHandler {
    */
   async parseMessage(
     rawContent: string,
-    message: unknown,
+    message: Message,
     meta: {
       authorId: string;
       channelId: string;
@@ -169,7 +170,7 @@ export class MallyHandler {
    */
   async handleMessage(
     rawContent: string,
-    message: unknown,
+    message: Message,
     meta: {
       authorId: string;
       channelId: string;
@@ -203,11 +204,29 @@ export class MallyHandler {
       await ctx.reply('This command is owner-only.');
       return false;
     }
-
+    const guards: Function[] = Reflect.getMetadata('mally:command:guards', instance.constructor) || [];
+    for (const guardClass of guards) {
+      const guardInstance = new (guardClass as any)();
+      if (typeof guardInstance.run === 'function') {
+        const guardResult = await guardInstance.run(ctx);
+        if (!guardResult) {
+          if (typeof guardInstance.guardFail === 'function') {
+            await guardInstance.guardFail(ctx);
+          } else {
+            console.error("[Mally] Guard check failed but no guardFail method defined on", guardClass.name);
+          }
+          return false;
+        }
+      }
+    }
     // Cooldown check
     if (!this.checkCooldown(ctx.authorId, metadata)) {
       const remaining = this.getRemainingCooldown(ctx.authorId, metadata);
-      await ctx.reply(`Please wait ${(remaining / 1000).toFixed(1)} seconds before using this command again.`);
+      if (instance.onCooldown) {
+        await instance.onCooldown(ctx, remaining);
+      } else {
+        await ctx.reply(`Please wait ${(remaining / 1000).toFixed(1)} seconds before using this command again.`);
+      }
       return false;
     }
     await instance.run(ctx)

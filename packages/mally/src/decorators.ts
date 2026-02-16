@@ -1,12 +1,12 @@
 import 'reflect-metadata';
-import type { CommandOptions, CommandMetadata } from './types';
+import type {CommandMetadata, CommandOptions} from './types';
 
 // Metadata keys
 const COMMAND_OPTIONS_KEY = Symbol('mally:command:options');
 const IS_COMMAND_KEY = Symbol('mally:command:isCommand');
 
 /**
- * @Command class decorator
+ * @Command
  * Marks a class as a command and attaches metadata
  *
  * @example
@@ -35,6 +35,36 @@ export function Command(options: CommandOptions = {}): ClassDecorator {
   };
 }
 
+/**
+ * @Guard
+ * Runs before a command to check if it should execute. Should return true to allow execution, false to block.
+ * @example
+ * ```ts
+ * import { Guard, CommandContext, Command, MallyCommand, NotBot } from '@marshmallow/mally';
+ *
+ * @Command({
+ *  description: 'A command that only admins can run',
+ * })
+ * @Guard(NotBot)
+ * export class AdminGuard implements MallyCommand {
+ *   metadata!: CommandMetadata;
+ *   async run(ctx: CommandContext): Promise<boolean> {
+ *     ctx.reply("You are not a bot, you can run this command!");
+ *   }
+ *   async guardFail(ctx: CommandContext): Promise<void> {
+ *     ctx.reply("You are a bot, you cannot run this command!");
+ *   }
+ * }
+ * ```
+ */
+export function Guard(guardClass: Function): ClassDecorator {
+  return (target: Function) => {
+    const existingGuards: Function[] =
+      Reflect.getMetadata('mally:command:guards', target) || [];
+    existingGuards.push(guardClass);
+    Reflect.defineMetadata('mally:command:guards', existingGuards, target);
+  };
+}
 /**
  * Check if a class is decorated with @Command
  */

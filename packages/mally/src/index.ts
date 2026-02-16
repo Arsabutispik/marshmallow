@@ -8,13 +8,14 @@ export type {
   MallyCommand,
   CommandConstructor,
   MallyHandlerOptions,
+    MallyGuard
 } from './types';
 
 // Base Command Class
 export { BaseCommand } from './types';
 
 // Decorators
-export { Command, isCommand, getCommandOptions, buildCommandMetadata } from './decorators';
+export { Command, isCommand, getCommandOptions, buildCommandMetadata, Guard } from './decorators';
 
 // Registry
 export { CommandRegistry } from './registry';

@@ -1,4 +1,4 @@
-import {Client} from "stoat.js";
+import {Client, Message} from "stoat.js";
 
 /**
  * Permission types for commands
@@ -72,7 +72,7 @@ export interface CommandContext {
   /** Reply to the message */
   reply: (content: string) => Promise<void>;
   /** The original message object (platform-specific) */
-  message: unknown;
+  message: Message;
 }
 
 
@@ -92,7 +92,17 @@ export interface MallyCommand {
    * Optional: Called when an error occurs during command execution
    */
   onError?(ctx: CommandContext, error: Error): Promise<void>;
+  /* Optional: Called when a guard check fails (if using @Guard) */
+  guardFail?(ctx: CommandContext): Promise<void>;
+  /* Optional: Called when a cooldown is active (if using cooldowns) */
+  onCooldown?(ctx: CommandContext, remaining: number): Promise<void>;
 }
+
+export interface MallyGuard {
+  run(ctx: CommandContext): Promise<boolean> | boolean;
+  guardFail?(ctx: CommandContext): Promise<void> | void;
+}
+
 
 /**
  * Abstract base class for commands.

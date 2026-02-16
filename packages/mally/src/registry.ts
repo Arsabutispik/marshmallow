@@ -17,14 +17,14 @@ export interface RegisteredCommand {
  *
  * @example
  * ```ts
- * const registry = new CommandRegistry<MyClient>();
+ * const registry = new CommandRegistry();
  * await registry.loadFromDirectory('./src/commands');
  *
  * const ping = registry.get('ping');
  * const allCommands = registry.getAll();
  * ```
  */
-export class CommandRegistry<TClient = unknown> {
+export class CommandRegistry {
   private readonly commands: Map<string, RegisteredCommand> = new Map();
   private readonly aliases: Map<string, string> = new Map();
   private readonly extensions: string[];
@@ -72,6 +72,9 @@ export class CommandRegistry<TClient = unknown> {
       console.warn(`[Mally] Duplicate command name: ${name}. Skipping...`);
       return;
     }
+
+    this.validateGuards(instance.constructor, metadata.name);
+    this.validateCooldown(instance, metadata);
 
     this.commands.set(name, { instance, metadata });
 
@@ -159,6 +162,45 @@ export class CommandRegistry<TClient = unknown> {
    */
   keys(): IterableIterator<string> {
     return this.commands.keys();
+  }
+
+  /**
+   * Validate that all guards on a command implement the required methods
+   * @param commandClass
+   * @param commandName
+   * @private
+   */
+  private validateGuards(commandClass: Function, commandName: string): void {
+    const guards: Function[] = Reflect.getMetadata('mally:command:guards', commandClass) || [];
+
+    for (const GuardClass of guards) {
+      const guardInstance = new (GuardClass as any)();
+
+      if (typeof guardInstance.run !== 'function') {
+        console.error(`[Mally] FATAL: Guard "${GuardClass.name}" on command "${commandName}" does not have a run() method.`);
+        process.exit(1);
+      }
+
+      if (typeof guardInstance.guardFail !== 'function') {
+        console.error(`[Mally] FATAL: Guard "${GuardClass.name}" on command "${commandName}" does not have a guardFail() method.`);
+        console.error(`[Mally] All guards must implement guardFail() to handle failed checks.`);
+        process.exit(1);
+      }
+    }
+  }
+
+  /**
+   * Validate that commands with cooldowns implement the onCooldown method
+   * @param instance
+   * @param metadata
+   * @private
+   */
+  private validateCooldown(instance: MallyCommand, metadata: CommandMetadata): void {
+    if (metadata.cooldown > 0 && typeof instance.onCooldown !== 'function') {
+      console.error(`[Mally] FATAL: Command "${metadata.name}" has a cooldown of ${metadata.cooldown}ms but does not implement onCooldown() method.`);
+      console.error(`[Mally] Commands with cooldowns must implement onCooldown(ctx, remaining) to handle cooldown messages.`);
+      process.exit(1);
+    }
   }
 
   /**
