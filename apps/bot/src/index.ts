@@ -22,7 +22,6 @@ client.on("ready", async () => {
 });
 
 client.on("messageCreate", async (message) => {
-    console.log("Received message:", message.content);
   await handler.handle(message);
 });
 void client.loginBot(env.BOT_TOKEN);
