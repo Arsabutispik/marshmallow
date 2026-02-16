@@ -1,5 +1,5 @@
 import { Command, BaseCommand, Context } from "@marshmallow/mally";
-
+//Unrelated message for testing purposes
 @Command({
     description: "Replies with Pong!",
     name: "ping",
