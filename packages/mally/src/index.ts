@@ -5,11 +5,9 @@ export type {
   CommandMetadata,
   CommandContext,
   CommandContext as Context, // Short alias for convenience
-  Middleware,
   MallyCommand,
   CommandConstructor,
   MallyHandlerOptions,
-  MessageAdapter,
 } from './types';
 
 // Base Command Class

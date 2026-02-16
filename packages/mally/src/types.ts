@@ -1,3 +1,5 @@
+import {Client} from "stoat.js";
+
 /**
  * Permission types for commands
  */
@@ -49,11 +51,10 @@ export interface CommandMetadata {
 
 /**
  * Command execution context
- * @template TClient - The client type (e.g., stoat.js Client)
  */
-export interface CommandContext<TClient = unknown> {
-  /** The Stoat client instance */
-  client: TClient;
+export interface CommandContext {
+  /** The client instance */
+    client: Client;
   /** The raw message content */
   content: string;
   /** The author ID */
@@ -74,30 +75,23 @@ export interface CommandContext<TClient = unknown> {
   message: unknown;
 }
 
-/**
- * Middleware function type
- */
-export type Middleware<TClient = unknown> = (
-  ctx: CommandContext<TClient>,
-  next: () => Promise<void>
-) => Promise<void>;
 
 /**
  * Interface that all command classes must implement
  */
-export interface MallyCommand<TClient = unknown> {
+export interface MallyCommand {
   /** Command metadata (injected by registry) */
   metadata: CommandMetadata;
 
   /**
    * Execute the command
    */
-  run(ctx: CommandContext<TClient>): Promise<void>;
+  run(ctx: CommandContext): Promise<void>;
 
   /**
    * Optional: Called when an error occurs during command execution
    */
-  onError?(ctx: CommandContext<TClient>, error: Error): Promise<void>;
+  onError?(ctx: CommandContext, error: Error): Promise<void>;
 }
 
 /**
@@ -114,23 +108,23 @@ export interface MallyCommand<TClient = unknown> {
  * }
  * ```
  */
-export abstract class BaseCommand<TClient = unknown> implements MallyCommand<TClient> {
+export abstract class BaseCommand implements MallyCommand{
   /** Command metadata (injected by registry) */
   metadata!: CommandMetadata;
 
   /** Typed context for use in subclasses */
-  protected ctx!: CommandContext<TClient>;
+  protected ctx!: CommandContext;
 
   /**
    * Execute the command - must be implemented by subclasses
    */
-  abstract run(ctx: CommandContext<TClient>): Promise<void>;
+  abstract run(ctx: CommandContext): Promise<void>;
 
   /**
    * Optional: Called when an error occurs during command execution.
    * Override this method to provide custom error handling.
    */
-  async onError(ctx: CommandContext<TClient>, error: Error): Promise<void> {
+  async onError(ctx: CommandContext, error: Error): Promise<void> {
     await ctx.reply(`An error occurred: ${error.message}`);
   }
 }
@@ -138,45 +132,24 @@ export abstract class BaseCommand<TClient = unknown> implements MallyCommand<TCl
 /**
  * Constructor type for command classes
  */
-export type CommandConstructor<TClient = unknown> = new () => MallyCommand<TClient>;
-
-/**
- * Message adapter to extract data from platform-specific message objects
- * @template TMessage - The platform-specific message type
- */
-export interface MessageAdapter<TMessage = unknown> {
-  /** Extract raw message content */
-  getContent(message: TMessage): string;
-  /** Extract author ID */
-  getAuthorId(message: TMessage): string;
-  /** Extract channel ID */
-  getChannelId(message: TMessage): string;
-  /** Extract server/guild ID (optional) */
-  getServerId?(message: TMessage): string | undefined;
-  /** Create a reply function for the message */
-  createReply(message: TMessage): (content: string) => Promise<void>;
-  /** Check if the message should be processed (e.g., skip bot messages) */
-  shouldProcess?(message: TMessage): boolean;
-}
+export type CommandConstructor = new () => MallyCommand;
 
 /**
  * Handler options
  */
-export interface MallyHandlerOptions<TClient = unknown, TMessage = unknown> {
-  /** The Stoat client instance */
-  client: TClient;
+export interface MallyHandlerOptions {
+    /** The client instance */
+    client: Client;
   /** Directory to scan for commands (absolute path) */
   commandsDir: string;
   /** Command prefix or prefix resolver function */
   prefix: string | ((ctx: { serverId?: string }) => string | Promise<string>);
   /** Owner IDs for owner-only commands */
   owners?: string[];
-  /** Global middlewares */
-  middlewares?: Middleware<TClient>[];
   /** File extensions to load (default: ['.js', '.ts']) */
   extensions?: string[];
-  /** Message adapter for automatic message parsing */
-  messageAdapter?: MessageAdapter<TMessage>;
+  /** Disable mention prefix support (default: false) */
+  disableMentionPrefix?: boolean;
 }
 
 

@@ -41,6 +41,9 @@ importers:
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
+      stoat.js:
+        specifier: ^7.3.6
+        version: 7.3.6
       tinyglobby:
         specifier: ^0.2.10
         version: 0.2.15

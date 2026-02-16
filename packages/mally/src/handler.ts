@@ -1,11 +1,6 @@
-import { CommandRegistry, RegisteredCommand } from './registry';
-import type {
-  CommandContext,
-  MallyHandlerOptions,
-  Middleware,
-  CommandMetadata,
-  MessageAdapter,
-} from './types';
+import {CommandRegistry, RegisteredCommand} from './registry';
+import type {CommandContext, CommandMetadata, MallyHandlerOptions, } from './types';
+import {Client} from "stoat.js";
 
 /**
  * MallyHandler - The execution engine for commands
@@ -24,7 +19,6 @@ import type {
  *   commandsDir: path.join(__dirname, 'commands'),
  *   prefix: '!',
  *   owners: ['owner-user-id'],
- *   middlewares: [permissionMiddleware],
  * });
  *
  * await handler.init();
@@ -34,24 +28,21 @@ import type {
  * });
  * ```
  */
-export class MallyHandler<TClient = unknown, TMessage = unknown> {
-  private readonly client: TClient;
+export class MallyHandler {
   private readonly commandsDir: string;
   private readonly prefixResolver: string | ((ctx: { serverId?: string }) => string | Promise<string>);
   private readonly owners: Set<string>;
-  private readonly middlewares: Middleware<TClient>[];
-  private readonly registry: CommandRegistry<TClient>;
+  private readonly registry: CommandRegistry;
   private readonly cooldowns: Map<string, Map<string, number>> = new Map();
-  private readonly messageAdapter?: MessageAdapter<TMessage>;
-
-  constructor(options: MallyHandlerOptions<TClient, TMessage>) {
+  private readonly disableMentionPrefix: boolean;
+  private readonly client: Client;
+  constructor(options: MallyHandlerOptions) {
     this.client = options.client;
     this.commandsDir = options.commandsDir;
     this.prefixResolver = options.prefix;
-    this.owners = new Set(options.owners ?? []);
-    this.middlewares = options.middlewares ?? [];
-    this.registry = new CommandRegistry<TClient>(options.extensions);
-    this.messageAdapter = options.messageAdapter;
+    this.owners = new Set(options.owners ?? [])
+    this.registry = new CommandRegistry(options.extensions);
+    this.disableMentionPrefix = options.disableMentionPrefix ?? false;
   }
 
   /**
@@ -59,16 +50,6 @@ export class MallyHandler<TClient = unknown, TMessage = unknown> {
    */
   async init(): Promise<void> {
     await this.registry.loadFromDirectory(this.commandsDir);
-  }
-
-  /**
-   * Resolve the prefix for a context
-   */
-  private async resolvePrefix(serverId?: string): Promise<string> {
-    if (typeof this.prefixResolver === 'function') {
-      return this.prefixResolver({ serverId });
-    }
-    return this.prefixResolver;
   }
 
   /**
@@ -83,14 +64,36 @@ export class MallyHandler<TClient = unknown, TMessage = unknown> {
       serverId?: string;
       reply: (content: string) => Promise<void>;
     }
-  ): Promise<CommandContext<TClient> | null> {
+  ): Promise<CommandContext | null> {
     const prefix = await this.resolvePrefix(meta.serverId);
+    let usedPrefix = prefix;
+    let withoutPrefix = '';
 
-    if (!rawContent.startsWith(prefix)) {
+    // Check for string prefix
+    if (rawContent.startsWith(prefix)) {
+      withoutPrefix = rawContent.slice(prefix.length).trim();
+      usedPrefix = prefix;
+    }
+    // Check for mention prefix (e.g., "<@bot-id> command") - unless disabled
+    else if (!this.disableMentionPrefix && rawContent.match(/^<@!?[\w]+>/)) {
+      const mentionMatch = rawContent.match(/^<@!?([\w]+)>\s*/);
+      if (mentionMatch) {
+        const mentionedId = mentionMatch[1];
+        const botId = this.client.user?.id;
+
+        // Only process if mentioned user is the bot
+        if (botId && mentionedId === botId) {
+          usedPrefix = mentionMatch[0];
+          withoutPrefix = rawContent.slice(mentionMatch[0].length).trim();
+        } else {
+        }
+      }
+    }
+
+    if (!withoutPrefix) {
       return null;
     }
 
-    const withoutPrefix = rawContent.slice(prefix.length).trim();
     const [commandName, ...args] = withoutPrefix.split(/\s+/);
 
     if (!commandName) {
@@ -104,7 +107,7 @@ export class MallyHandler<TClient = unknown, TMessage = unknown> {
       channelId: meta.channelId,
       serverId: meta.serverId,
       args,
-      prefix,
+      prefix: usedPrefix,
       commandName: commandName.toLowerCase(),
       reply: meta.reply,
       message,
@@ -122,23 +125,23 @@ export class MallyHandler<TClient = unknown, TMessage = unknown> {
    * });
    * ```
    */
-  async handle(message: TMessage): Promise<boolean> {
-    if (!this.messageAdapter) {
-      throw new Error(
-        'MessageAdapter is not configured. Either provide a messageAdapter in options or use handleMessage() with manual metadata.'
-      );
-    }
-
-    // Check if message should be processed
-    if (this.messageAdapter.shouldProcess && !this.messageAdapter.shouldProcess(message)) {
+  async handle(message: any): Promise<boolean> {
+    if(!message.channel || !message.author) {
       return false;
     }
 
-    const rawContent = this.messageAdapter.getContent(message);
-    const authorId = this.messageAdapter.getAuthorId(message);
-    const channelId = this.messageAdapter.getChannelId(message);
-    const serverId = this.messageAdapter.getServerId?.(message);
-    const reply = this.messageAdapter.createReply(message);
+    // Skip messages from bots
+    if (message.author.bot) {
+      return false;
+    }
+
+    const rawContent = message.content;
+    const authorId = message.author.id;
+    const channelId = message.channel.id;
+    const serverId = message.server?.id;
+    const reply = async (content: string) => {
+      await message.channel!.sendMessage(content);
+    }
 
     return this.handleMessage(rawContent, message, {
       authorId,
@@ -186,7 +189,7 @@ export class MallyHandler<TClient = unknown, TMessage = unknown> {
   /**
    * Execute a command with the given context
    */
-  async execute(ctx: CommandContext<TClient>): Promise<boolean> {
+  async execute(ctx: CommandContext): Promise<boolean> {
     const registered = this.registry.get(ctx.commandName);
 
     if (!registered) {
@@ -207,18 +210,8 @@ export class MallyHandler<TClient = unknown, TMessage = unknown> {
       await ctx.reply(`Please wait ${(remaining / 1000).toFixed(1)} seconds before using this command again.`);
       return false;
     }
-
-    // Create middleware chain
-    const runCommand = async (): Promise<void> => {
-      await instance.run(ctx);
-    };
-
-    // Build middleware chain with permission check as first middleware
-    const chain = this.buildMiddlewareChain(ctx, metadata, runCommand);
-
+    await instance.run(ctx)
     try {
-      await chain();
-
       // Set cooldown after successful execution
       if (metadata.cooldown > 0) {
         this.setCooldown(ctx.authorId, metadata);
@@ -237,41 +230,64 @@ export class MallyHandler<TClient = unknown, TMessage = unknown> {
   }
 
   /**
-   * Build the middleware execution chain
+   * Get the command registry
    */
-  private buildMiddlewareChain(
-    ctx: CommandContext<TClient>,
-    metadata: CommandMetadata,
-    finalHandler: () => Promise<void>
-  ): () => Promise<void> {
-    // Built-in permission middleware
-    const permissionMiddleware: Middleware<TClient> = async (ctx, next) => {
-      // Permission check logic would go here
-      // For now, we'll just pass through
-      // In a real implementation, you'd check ctx against metadata.permissions
-      if (metadata.permissions.length > 0) {
-        // TODO: Implement actual permission checking with Stoat API
-        // For now, we assume permissions are valid
-      }
-      await next();
-    };
+  getRegistry(): CommandRegistry {
+    return this.registry;
+  }
 
-    // Combine built-in and user middlewares
-    const allMiddlewares: Middleware<TClient>[] = [
-      permissionMiddleware,
-      ...this.middlewares,
-    ];
+  /**
+   * Get a command by name or alias
+   */
+  getCommand(name: string): RegisteredCommand | undefined {
+    return this.registry.get(name);
+  }
 
-    // Build chain from right to left
-    let chain = finalHandler;
+  /**
+   * Get all commands
+   */
+  getCommands(): RegisteredCommand[] {
+    return this.registry.getAll();
+  }
 
-    for (let i = allMiddlewares.length - 1; i >= 0; i--) {
-      const middleware = allMiddlewares[i];
-      const nextChain = chain;
-      chain = () => middleware(ctx, nextChain);
+  /**
+   * Reload all commands
+   */
+  async reload(): Promise<void> {
+    this.registry.clear();
+    this.cooldowns.clear();
+    await this.registry.loadFromDirectory(this.commandsDir);
+  }
+
+  /**
+   * Check if a user is an owner
+   */
+  isOwner(userId: string): boolean {
+    return this.owners.has(userId);
+  }
+
+  /**
+   * Add an owner
+   */
+  addOwner(userId: string): void {
+    this.owners.add(userId);
+  }
+
+  /**
+   * Remove an owner
+   */
+  removeOwner(userId: string): void {
+    this.owners.delete(userId);
+  }
+
+  /**
+   * Resolve the prefix for a context
+   */
+  private async resolvePrefix(serverId?: string): Promise<string> {
+    if (typeof this.prefixResolver === 'function') {
+      return this.prefixResolver({ serverId });
     }
-
-    return chain;
+    return this.prefixResolver;
   }
 
   /**
@@ -312,65 +328,6 @@ export class MallyHandler<TClient = unknown, TMessage = unknown> {
 
     const commandCooldowns = this.cooldowns.get(metadata.name)!;
     commandCooldowns.set(userId, Date.now() + metadata.cooldown);
-  }
-
-  /**
-   * Add a global middleware
-   */
-  use(middleware: Middleware<TClient>): this {
-    this.middlewares.push(middleware);
-    return this;
-  }
-
-  /**
-   * Get the command registry
-   */
-  getRegistry(): CommandRegistry<TClient> {
-    return this.registry;
-  }
-
-  /**
-   * Get a command by name or alias
-   */
-  getCommand(name: string): RegisteredCommand<TClient> | undefined {
-    return this.registry.get(name);
-  }
-
-  /**
-   * Get all commands
-   */
-  getCommands(): RegisteredCommand<TClient>[] {
-    return this.registry.getAll();
-  }
-
-  /**
-   * Reload all commands
-   */
-  async reload(): Promise<void> {
-    this.registry.clear();
-    this.cooldowns.clear();
-    await this.registry.loadFromDirectory(this.commandsDir);
-  }
-
-  /**
-   * Check if a user is an owner
-   */
-  isOwner(userId: string): boolean {
-    return this.owners.has(userId);
-  }
-
-  /**
-   * Add an owner
-   */
-  addOwner(userId: string): void {
-    this.owners.add(userId);
-  }
-
-  /**
-   * Remove an owner
-   */
-  removeOwner(userId: string): void {
-    this.owners.delete(userId);
   }
 }
 

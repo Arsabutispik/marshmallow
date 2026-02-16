@@ -1,14 +1,14 @@
 import * as path from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { glob } from 'tinyglobby';
-import { isCommand, getCommandOptions, buildCommandMetadata } from './decorators';
-import type { MallyCommand, CommandMetadata, CommandConstructor } from './types';
+import {pathToFileURL} from 'node:url';
+import {glob} from 'tinyglobby';
+import {buildCommandMetadata, getCommandOptions, isCommand} from './decorators';
+import type {CommandConstructor, CommandMetadata, MallyCommand} from './types';
 
 /**
  * Stored command entry
  */
-export interface RegisteredCommand<TClient = unknown> {
-  instance: MallyCommand<TClient>;
+export interface RegisteredCommand {
+  instance: MallyCommand;
   metadata: CommandMetadata;
 }
 
@@ -25,12 +25,19 @@ export interface RegisteredCommand<TClient = unknown> {
  * ```
  */
 export class CommandRegistry<TClient = unknown> {
-  private readonly commands: Map<string, RegisteredCommand<TClient>> = new Map();
+  private readonly commands: Map<string, RegisteredCommand> = new Map();
   private readonly aliases: Map<string, string> = new Map();
   private readonly extensions: string[];
 
   constructor(extensions: string[] = ['.js', '.ts']) {
     this.extensions = extensions;
+  }
+
+  /**
+   * Get the number of registered commands
+   */
+  get size(): number {
+    return this.commands.size;
   }
 
   /**
@@ -56,6 +63,105 @@ export class CommandRegistry<TClient = unknown> {
   }
 
   /**
+   * Register a command instance
+   */
+  register(instance: MallyCommand, metadata: CommandMetadata): void {
+    const name = metadata.name.toLowerCase();
+
+    if (this.commands.has(name)) {
+      console.warn(`[Mally] Duplicate command name: ${name}. Skipping...`);
+      return;
+    }
+
+    this.commands.set(name, { instance, metadata });
+
+    for (const alias of metadata.aliases) {
+      const aliasLower = alias.toLowerCase();
+      if (this.aliases.has(aliasLower) || this.commands.has(aliasLower)) {
+        console.warn(`[Mally] Duplicate alias: ${aliasLower}. Skipping...`);
+        continue;
+      }
+      this.aliases.set(aliasLower, name);
+    }
+  }
+
+  /**
+   * Get a command by name or alias
+   */
+  get(name: string): RegisteredCommand | undefined {
+    const lowerName = name.toLowerCase();
+    const resolvedName = this.aliases.get(lowerName) ?? lowerName;
+    return this.commands.get(resolvedName);
+  }
+
+  /**
+   * Check if a command exists
+   */
+  has(name: string): boolean {
+    const lowerName = name.toLowerCase();
+    return this.commands.has(lowerName) || this.aliases.has(lowerName);
+  }
+
+  /**
+   * Get all registered commands
+   */
+  getAll(): RegisteredCommand[] {
+    return Array.from(this.commands.values());
+  }
+
+  /**
+   * Get all command metadata
+   */
+  getAllMetadata(): CommandMetadata[] {
+    return this.getAll().map(c => c.metadata);
+  }
+
+  /**
+   * Get commands grouped by category
+   */
+  getByCategory(): Map<string, RegisteredCommand[]> {
+    const categories = new Map<string, RegisteredCommand[]>();
+
+    for (const cmd of this.commands.values()) {
+      const category = cmd.metadata.category;
+      const existing = categories.get(category) ?? [];
+      existing.push(cmd);
+      categories.set(category, existing);
+    }
+
+    return categories;
+  }
+
+  /**
+   * Clear all commands
+   */
+  clear(): void {
+    this.commands.clear();
+    this.aliases.clear();
+  }
+
+  /**
+   * Iterate over commands
+   */
+  [Symbol.iterator](): IterableIterator<[string, RegisteredCommand]> {
+    return this.commands.entries();
+  }
+
+  /**
+   * Iterate over command values
+   */
+  values(): IterableIterator<RegisteredCommand> {
+    return this.commands.values();
+  }
+
+  /**
+   * Iterate over command names
+   */
+  keys(): IterableIterator<string> {
+    return this.commands.keys();
+  }
+
+  /**
    * Load commands from a single file
    */
   private async loadFile(filePath: string, baseDir: string): Promise<void> {
@@ -74,7 +180,7 @@ export class CommandRegistry<TClient = unknown> {
         if (!options) continue;
 
         // Validate that the class implements MallyCommand
-        const instance = new (exported as CommandConstructor<TClient>)();
+        const instance = new (exported as CommandConstructor)();
 
         if (typeof instance.run !== 'function') {
           console.warn(
@@ -109,112 +215,6 @@ export class CommandRegistry<TClient = unknown> {
     }
 
     return undefined;
-  }
-
-  /**
-   * Register a command instance
-   */
-  register(instance: MallyCommand<TClient>, metadata: CommandMetadata): void {
-    const name = metadata.name.toLowerCase();
-
-    if (this.commands.has(name)) {
-      console.warn(`[Mally] Duplicate command name: ${name}. Skipping...`);
-      return;
-    }
-
-    this.commands.set(name, { instance, metadata });
-
-    for (const alias of metadata.aliases) {
-      const aliasLower = alias.toLowerCase();
-      if (this.aliases.has(aliasLower) || this.commands.has(aliasLower)) {
-        console.warn(`[Mally] Duplicate alias: ${aliasLower}. Skipping...`);
-        continue;
-      }
-      this.aliases.set(aliasLower, name);
-    }
-  }
-
-  /**
-   * Get a command by name or alias
-   */
-  get(name: string): RegisteredCommand<TClient> | undefined {
-    const lowerName = name.toLowerCase();
-    const resolvedName = this.aliases.get(lowerName) ?? lowerName;
-    return this.commands.get(resolvedName);
-  }
-
-  /**
-   * Check if a command exists
-   */
-  has(name: string): boolean {
-    const lowerName = name.toLowerCase();
-    return this.commands.has(lowerName) || this.aliases.has(lowerName);
-  }
-
-  /**
-   * Get all registered commands
-   */
-  getAll(): RegisteredCommand<TClient>[] {
-    return Array.from(this.commands.values());
-  }
-
-  /**
-   * Get all command metadata
-   */
-  getAllMetadata(): CommandMetadata[] {
-    return this.getAll().map(c => c.metadata);
-  }
-
-  /**
-   * Get commands grouped by category
-   */
-  getByCategory(): Map<string, RegisteredCommand<TClient>[]> {
-    const categories = new Map<string, RegisteredCommand<TClient>[]>();
-
-    for (const cmd of this.commands.values()) {
-      const category = cmd.metadata.category;
-      const existing = categories.get(category) ?? [];
-      existing.push(cmd);
-      categories.set(category, existing);
-    }
-
-    return categories;
-  }
-
-  /**
-   * Get the number of registered commands
-   */
-  get size(): number {
-    return this.commands.size;
-  }
-
-  /**
-   * Clear all commands
-   */
-  clear(): void {
-    this.commands.clear();
-    this.aliases.clear();
-  }
-
-  /**
-   * Iterate over commands
-   */
-  [Symbol.iterator](): IterableIterator<[string, RegisteredCommand<TClient>]> {
-    return this.commands.entries();
-  }
-
-  /**
-   * Iterate over command values
-   */
-  values(): IterableIterator<RegisteredCommand<TClient>> {
-    return this.commands.values();
-  }
-
-  /**
-   * Iterate over command names
-   */
-  keys(): IterableIterator<string> {
-    return this.commands.keys();
   }
 }
 
