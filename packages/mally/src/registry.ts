@@ -1,15 +1,15 @@
-import * as path from 'node:path';
-import {pathToFileURL} from 'node:url';
-import {glob} from 'tinyglobby';
+import * as path from "node:path";
+import { pathToFileURL } from "node:url";
+import { glob } from "tinyglobby";
 import {
   buildCommandMetadata,
   buildSimpleCommandMetadata,
   getCommandOptions,
   getSimpleCommands,
   isCommand,
-  isStoatClass
-} from './decorators';
-import type {CommandConstructor, CommandMetadata, MallyCommand} from './types';
+  isStoatClass,
+} from "./decorators";
+import type { CommandConstructor, CommandMetadata, MallyCommand } from "./types";
 
 /**
  * Stored command entry (supports both class-based and method-based commands)
@@ -42,7 +42,7 @@ export class CommandRegistry {
   private readonly aliases: Map<string, string> = new Map();
   private readonly extensions: string[];
 
-  constructor(extensions: string[] = ['.js', '.ts']) {
+  constructor(extensions: string[] = [".js", ".ts"]) {
     this.extensions = extensions;
   }
 
@@ -57,13 +57,11 @@ export class CommandRegistry {
    * Load commands from a directory using glob pattern matching
    */
   async loadFromDirectory(directory: string): Promise<void> {
-    const patterns = this.extensions.map(ext =>
-      path.join(directory, '**', `*${ext}`).replace(/\\/g, '/')
-    );
+    const patterns = this.extensions.map((ext) => path.join(directory, "**", `*${ext}`).replace(/\\/g, "/"));
 
     for (const pattern of patterns) {
       const files = await glob(pattern, {
-        ignore: ['**/*.d.ts', '**/*.test.ts', '**/*.spec.ts'],
+        ignore: ["**/*.d.ts", "**/*.test.ts", "**/*.spec.ts"],
         absolute: true,
       });
 
@@ -82,7 +80,7 @@ export class CommandRegistry {
     instance: MallyCommand | object,
     metadata: CommandMetadata,
     classConstructor: Function,
-    methodName?: string
+    methodName?: string,
   ): void {
     const name = metadata.name.toLowerCase();
 
@@ -138,7 +136,7 @@ export class CommandRegistry {
    * Get all command metadata
    */
   getAllMetadata(): CommandMetadata[] {
-    return this.getAll().map(c => c.metadata);
+    return this.getAll().map((c) => c.metadata);
   }
 
   /**
@@ -193,18 +191,22 @@ export class CommandRegistry {
    * @private
    */
   private validateGuards(commandClass: Function, commandName: string): void {
-    const guards: Function[] = Reflect.getMetadata('mally:command:guards', commandClass) || [];
+    const guards: Function[] = Reflect.getMetadata("mally:command:guards", commandClass) || [];
 
     for (const GuardClass of guards) {
       const guardInstance = new (GuardClass as any)();
 
-      if (typeof guardInstance.run !== 'function') {
-        console.error(`[Mally] FATAL: Guard "${GuardClass.name}" on command "${commandName}" does not have a run() method.`);
+      if (typeof guardInstance.run !== "function") {
+        console.error(
+          `[Mally] FATAL: Guard "${GuardClass.name}" on command "${commandName}" does not have a run() method.`,
+        );
         process.exit(1);
       }
 
-      if (typeof guardInstance.guardFail !== 'function') {
-        console.error(`[Mally] FATAL: Guard "${GuardClass.name}" on command "${commandName}" does not have a guardFail() method.`);
+      if (typeof guardInstance.guardFail !== "function") {
+        console.error(
+          `[Mally] FATAL: Guard "${GuardClass.name}" on command "${commandName}" does not have a guardFail() method.`,
+        );
         console.error(`[Mally] All guards must implement guardFail() to handle failed checks.`);
         process.exit(1);
       }
@@ -218,9 +220,13 @@ export class CommandRegistry {
    * @private
    */
   private validateCooldown(instance: MallyCommand, metadata: CommandMetadata): void {
-    if (metadata.cooldown > 0 && typeof instance.onCooldown !== 'function') {
-      console.error(`[Mally] FATAL: Command "${metadata.name}" has a cooldown of ${metadata.cooldown}ms but does not implement onCooldown() method.`);
-      console.error(`[Mally] Commands with cooldowns must implement onCooldown(ctx, remaining) to handle cooldown messages.`);
+    if (metadata.cooldown > 0 && typeof instance.onCooldown !== "function") {
+      console.error(
+        `[Mally] FATAL: Command "${metadata.name}" has a cooldown of ${metadata.cooldown}ms but does not implement onCooldown() method.`,
+      );
+      console.error(
+        `[Mally] Commands with cooldowns must implement onCooldown(ctx, remaining) to handle cooldown messages.`,
+      );
       process.exit(1);
     }
   }
@@ -236,7 +242,7 @@ export class CommandRegistry {
       for (const exportKey of Object.keys(module)) {
         const exported = module[exportKey];
 
-        if (typeof exported !== 'function') {
+        if (typeof exported !== "function") {
           continue;
         }
 
@@ -248,17 +254,15 @@ export class CommandRegistry {
 
           if (simpleCommands.length === 0) {
             console.warn(
-              `[Mally] Class ${exported.name} is decorated with @Stoat but has no @SimpleCommand methods. Skipping...`
+              `[Mally] Class ${exported.name} is decorated with @Stoat but has no @SimpleCommand methods. Skipping...`,
             );
             continue;
           }
 
           for (const cmdDef of simpleCommands) {
             const method = (instance as any)[cmdDef.methodName];
-            if (typeof method !== 'function') {
-              console.warn(
-                `[Mally] Method ${cmdDef.methodName} not found on ${exported.name}. Skipping...`
-              );
+            if (typeof method !== "function") {
+              console.warn(`[Mally] Method ${cmdDef.methodName} not found on ${exported.name}. Skipping...`);
               continue;
             }
 
@@ -279,9 +283,9 @@ export class CommandRegistry {
         // Validate that the class implements MallyCommand
         const instance = new (exported as CommandConstructor)();
 
-        if (typeof instance.run !== 'function') {
+        if (typeof instance.run !== "function") {
           console.warn(
-            `[Mally] Class ${exported.name} is decorated with @Command but does not implement run() method. Skipping...`
+            `[Mally] Class ${exported.name} is decorated with @Command but does not implement run() method. Skipping...`,
           );
           continue;
         }
@@ -314,5 +318,3 @@ export class CommandRegistry {
     return undefined;
   }
 }
-
-

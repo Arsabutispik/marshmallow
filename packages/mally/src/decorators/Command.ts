@@ -1,6 +1,6 @@
-import 'reflect-metadata';
-import type {CommandMetadata, CommandOptions} from '../types';
-import {METADATA_KEYS} from './keys';
+import "reflect-metadata";
+import type { CommandMetadata, CommandOptions } from "../types";
+import { METADATA_KEYS } from "./keys";
 
 /**
  * @Command
@@ -50,25 +50,18 @@ export function getCommandOptions(target: Function): CommandOptions | undefined 
 /**
  * Build complete CommandMetadata from options and class name
  */
-export function buildCommandMetadata(
-  target: Function,
-  options: CommandOptions,
-  category?: string
-): CommandMetadata {
+export function buildCommandMetadata(target: Function, options: CommandOptions, category?: string): CommandMetadata {
   const className = target.name;
-  const derivedName = className
-    .replace(/Command$/i, '')
-    .toLowerCase();
+  const derivedName = className.replace(/Command$/i, "").toLowerCase();
 
   return {
     name: options.name ?? derivedName,
-    description: options.description ?? 'No description provided',
+    description: options.description ?? "No description provided",
     aliases: options.aliases ?? [],
     permissions: options.permissions ?? [],
-    category: options.category ?? category ?? 'uncategorized',
+    category: options.category ?? category ?? "uncategorized",
     cooldown: options.cooldown ?? 0,
     nsfw: options.nsfw ?? false,
     ownerOnly: options.ownerOnly ?? false,
   };
 }
-

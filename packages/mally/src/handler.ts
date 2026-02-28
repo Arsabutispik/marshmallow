@@ -1,7 +1,7 @@
-import 'reflect-metadata';
-import {CommandRegistry, RegisteredCommand} from './registry';
-import type {CommandContext, CommandMetadata, MallyCommand, MallyHandlerOptions, } from './types';
-import {Client, Message} from "stoat.js";
+import "reflect-metadata";
+import { CommandRegistry, RegisteredCommand } from "./registry";
+import type { CommandContext, CommandMetadata, MallyCommand, MallyHandlerOptions } from "./types";
+import { Client, Message } from "stoat.js";
 
 /**
  * MallyHandler - The execution engine for commands
@@ -41,7 +41,7 @@ export class MallyHandler {
     this.client = options.client;
     this.commandsDir = options.commandsDir;
     this.prefixResolver = options.prefix;
-    this.owners = new Set(options.owners ?? [])
+    this.owners = new Set(options.owners ?? []);
     this.registry = new CommandRegistry(options.extensions);
     this.disableMentionPrefix = options.disableMentionPrefix ?? false;
   }
@@ -64,11 +64,11 @@ export class MallyHandler {
       channelId: string;
       serverId?: string;
       reply: (content: string) => Promise<void>;
-    }
+    },
   ): Promise<CommandContext | null> {
     const prefix = await this.resolvePrefix(meta.serverId);
     let usedPrefix = prefix;
-    let withoutPrefix = '';
+    let withoutPrefix = "";
 
     // Check for string prefix
     if (rawContent.startsWith(prefix)) {
@@ -127,7 +127,7 @@ export class MallyHandler {
    * ```
    */
   async handle(message: any): Promise<boolean> {
-    if(!message.channel || !message.author) {
+    if (!message.channel || !message.author) {
       return false;
     }
 
@@ -142,7 +142,7 @@ export class MallyHandler {
     const serverId = message.server?.id;
     const reply = async (content: string) => {
       await message.channel!.sendMessage(content);
-    }
+    };
 
     return this.handleMessage(rawContent, message, {
       authorId,
@@ -176,7 +176,7 @@ export class MallyHandler {
       channelId: string;
       serverId?: string;
       reply: (content: string) => Promise<void>;
-    }
+    },
   ): Promise<boolean> {
     const ctx = await this.parseMessage(rawContent, message, meta);
 
@@ -201,18 +201,18 @@ export class MallyHandler {
 
     // Owner-only check
     if (metadata.ownerOnly && !this.owners.has(ctx.authorId)) {
-      await ctx.reply('This command is owner-only.');
+      await ctx.reply("This command is owner-only.");
       return false;
     }
 
     // Guard checks - use classConstructor for guard metadata
-    const guards: Function[] = Reflect.getMetadata('mally:command:guards', classConstructor) || [];
+    const guards: Function[] = Reflect.getMetadata("mally:command:guards", classConstructor) || [];
     for (const guardClass of guards) {
       const guardInstance = new (guardClass as any)();
-      if (typeof guardInstance.run === 'function') {
+      if (typeof guardInstance.run === "function") {
         const guardResult = await guardInstance.run(ctx);
         if (!guardResult) {
-          if (typeof guardInstance.guardFail === 'function') {
+          if (typeof guardInstance.guardFail === "function") {
             await guardInstance.guardFail(ctx);
           } else {
             console.error("[Mally] Guard check failed but no guardFail method defined on", guardClass.name);
@@ -227,7 +227,7 @@ export class MallyHandler {
       const remaining = this.getRemainingCooldown(ctx.authorId, metadata);
 
       // For method-based commands, check if instance has onCooldown
-      if (typeof (instance as any).onCooldown === 'function') {
+      if (typeof (instance as any).onCooldown === "function") {
         await (instance as any).onCooldown(ctx, remaining);
       } else {
         await ctx.reply(`Please wait ${(remaining / 1000).toFixed(1)} seconds before using this command again.`);
@@ -253,7 +253,7 @@ export class MallyHandler {
       return true;
     } catch (error) {
       // Handle errors
-      if (typeof (instance as any).onError === 'function') {
+      if (typeof (instance as any).onError === "function") {
         await (instance as any).onError(ctx, error as Error);
       } else {
         console.error(`[Mally] Error in command ${metadata.name}:`, error);
@@ -318,7 +318,7 @@ export class MallyHandler {
    * Resolve the prefix for a context
    */
   private async resolvePrefix(serverId?: string): Promise<string> {
-    if (typeof this.prefixResolver === 'function') {
+    if (typeof this.prefixResolver === "function") {
       return this.prefixResolver({ serverId });
     }
     return this.prefixResolver;
@@ -364,4 +364,3 @@ export class MallyHandler {
     commandCooldowns.set(userId, Date.now() + metadata.cooldown);
   }
 }
-

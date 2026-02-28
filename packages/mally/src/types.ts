@@ -1,16 +1,16 @@
-import {Client, Message} from "stoat.js";
+import { Client, Message } from "stoat.js";
 
 /**
  * Permission types for commands
  */
 export type Permission =
-  | 'SendMessages'
-  | 'ManageMessages'
-  | 'ManageChannels'
-  | 'ManageServer'
-  | 'KickMembers'
-  | 'BanMembers'
-  | 'Administrator'
+  | "SendMessages"
+  | "ManageMessages"
+  | "ManageChannels"
+  | "ManageServer"
+  | "KickMembers"
+  | "BanMembers"
+  | "Administrator"
   | (string & {});
 
 /**
@@ -77,7 +77,7 @@ export interface CommandMetadata {
  */
 export interface CommandContext {
   /** The client instance */
-    client: Client;
+  client: Client;
   /** The raw message content */
   content: string;
   /** The author ID */
@@ -97,7 +97,6 @@ export interface CommandContext {
   /** The original message object (platform-specific) */
   message: Message;
 }
-
 
 /**
  * Interface that all command classes must implement
@@ -126,7 +125,6 @@ export interface MallyGuard {
   guardFail?(ctx: CommandContext): Promise<void> | void;
 }
 
-
 /**
  * Abstract base class for commands.
  * Extend this class to create commands without boilerplate.
@@ -141,7 +139,7 @@ export interface MallyGuard {
  * }
  * ```
  */
-export abstract class BaseCommand implements MallyCommand{
+export abstract class BaseCommand implements MallyCommand {
   /** Command metadata (injected by registry) */
   metadata!: CommandMetadata;
 
@@ -171,8 +169,8 @@ export type CommandConstructor = new () => MallyCommand;
  * Handler options
  */
 export interface MallyHandlerOptions {
-    /** The client instance */
-    client: Client;
+  /** The client instance */
+  client: Client;
   /** Directory to scan for commands (absolute path) */
   commandsDir: string;
   /** Command prefix or prefix resolver function */
@@ -184,6 +182,3 @@ export interface MallyHandlerOptions {
   /** Disable mention prefix support (default: false) */
   disableMentionPrefix?: boolean;
 }
-
-
-

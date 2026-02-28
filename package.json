@@ -8,7 +8,7 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm -r build && changeset publish",
-    "format": "prettier --write ."
+    "format": "pnpm -r format"
   },
   "keywords": ["stoat", "moderation", "bot", "documentation", "stoatbot"],
   "homepage": "https://docs.marshmallow-stoat.com",

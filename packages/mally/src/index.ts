@@ -9,11 +9,11 @@ export type {
   MallyCommand,
   CommandConstructor,
   MallyHandlerOptions,
-    MallyGuard
-} from './types';
+  MallyGuard,
+} from "./types";
 
 // Base Command Class
-export { BaseCommand } from './types';
+export { BaseCommand } from "./types";
 
 // Decorators
 export {
@@ -29,14 +29,13 @@ export {
   buildCommandMetadata,
   buildSimpleCommandMetadata,
   METADATA_KEYS,
-} from './decorators';
+} from "./decorators";
 
-export type { SimpleCommandDefinition } from './decorators';
+export type { SimpleCommandDefinition } from "./decorators";
 
 // Registry
-export { CommandRegistry } from './registry';
-export type { RegisteredCommand } from './registry';
+export { CommandRegistry } from "./registry";
+export type { RegisteredCommand } from "./registry";
 
 // Handler
-export { MallyHandler } from './handler';
-
+export { MallyHandler } from "./handler";

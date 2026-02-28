@@ -1,5 +1,5 @@
-import 'reflect-metadata';
-import {METADATA_KEYS} from './keys';
+import "reflect-metadata";
+import { METADATA_KEYS } from "./keys";
 
 /**
  * @Guard
@@ -34,8 +34,7 @@ import {METADATA_KEYS} from './keys';
  */
 export function Guard(guardClass: Function): ClassDecorator {
   return (target: Function) => {
-    const existingGuards: Function[] =
-      Reflect.getMetadata(METADATA_KEYS.GUARDS, target) || [];
+    const existingGuards: Function[] = Reflect.getMetadata(METADATA_KEYS.GUARDS, target) || [];
     existingGuards.push(guardClass);
     Reflect.defineMetadata(METADATA_KEYS.GUARDS, existingGuards, target);
   };
@@ -47,4 +46,3 @@ export function Guard(guardClass: Function): ClassDecorator {
 export function getGuards(target: Function): Function[] {
   return Reflect.getMetadata(METADATA_KEYS.GUARDS, target) || [];
 }
-

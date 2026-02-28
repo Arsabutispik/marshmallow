@@ -1,6 +1,6 @@
-import 'reflect-metadata';
-import type {SimpleCommandOptions} from '../types';
-import {METADATA_KEYS} from './keys';
+import "reflect-metadata";
+import type { SimpleCommandOptions } from "../types";
+import { METADATA_KEYS } from "./keys";
 
 /**
  * Stored simple command metadata from method decorator
@@ -56,4 +56,3 @@ export function SimpleCommand(options: SimpleCommandOptions = {}): MethodDecorat
 export function getSimpleCommands(target: Function): SimpleCommandDefinition[] {
   return Reflect.getMetadata(METADATA_KEYS.SIMPLE_COMMANDS, target) || [];
 }
-

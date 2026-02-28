@@ -1,4 +1,4 @@
-import type {RegisteredCommand} from '../registry';
+import type { RegisteredCommand } from "../registry";
 
 /**
  * Global store for all decorated classes and commands
@@ -82,5 +82,3 @@ class DecoratorStore {
 }
 
 export const decoratorStore = DecoratorStore.getInstance();
-
-

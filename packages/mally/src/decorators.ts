@@ -30,7 +30,7 @@ export {
 
   // Metadata keys
   METADATA_KEYS,
-} from './decorators/index';
+} from "./decorators/index";
 
 // Re-export types
-export type { SimpleCommandDefinition } from './decorators/index';
+export type { SimpleCommandDefinition } from "./decorators/index";
