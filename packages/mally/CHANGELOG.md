@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.0
+
+### Minor Changes
+
+- [`f8a9da8`](https://github.com/Arsabutispik/marshmallow/commit/f8a9da821b5e5873ed7ab1a86740366a9832e5f7) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Initial release of @marshmallow/mally - a decorator-based command handler for the Stoat ecosystem.
+
+  ### Features
+  - **Decorator System**: `@Stoat()`, `@SimpleCommand()`, `@Guard()`, `@Command()` decorators
+  - **Command Loading**: Directory-based loading with `commandsDir` option
+  - **Guard System**: Permission checks with multiple guards and `guardFail()` handling
+  - **Cooldowns**: Per-command cooldown with `onCooldown` handler
+  - **Context API**: `reply()`, args parsing, dynamic prefix support
+  - **TypeScript**: Full type definitions and `BaseCommand` abstract class
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -46,4 +60,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Notes
 
 This is the initial release of `@marshmallow/mally`. The API is considered unstable and may change in future minor versions until 1.0.0.
-
