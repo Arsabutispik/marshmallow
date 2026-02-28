@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+### Patch Changes
+
+- [`5cf626c`](https://github.com/Arsabutispik/marshmallow/commit/5cf626c4159580d43469458aa12efc1db79b9b19) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Fix package.json
+
 ## 0.1.1
 
 ### Patch Changes

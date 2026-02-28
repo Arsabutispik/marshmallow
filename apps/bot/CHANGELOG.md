@@ -1,5 +1,12 @@
 # @marshmallow/bot
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`5cf626c`](https://github.com/Arsabutispik/marshmallow/commit/5cf626c4159580d43469458aa12efc1db79b9b19)]:
+  - @marshmallow-stoat/mally@0.1.2
+
 ## 0.0.2
 
 ### Patch Changes
