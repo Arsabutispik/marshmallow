@@ -36,6 +36,29 @@ export interface CommandOptions {
 }
 
 /**
+ * Simple command options passed to @SimpleCommand decorator
+ * Used with @Stoat() decorated classes for method-based commands
+ */
+export interface SimpleCommandOptions {
+  /** Command name (defaults to method name) */
+  name?: string;
+  /** Command description */
+  description?: string;
+  /** Command aliases */
+  aliases?: string[];
+  /** Required permissions to run the command */
+  permissions?: Permission[];
+  /** Command category (auto-detected from directory if not provided) */
+  category?: string;
+  /** Cooldown in milliseconds */
+  cooldown?: number;
+  /** Whether the command is NSFW only */
+  nsfw?: boolean;
+  /** Whether the command is owner only */
+  ownerOnly?: boolean;
+}
+
+/**
  * Resolved command metadata with required fields
  */
 export interface CommandMetadata {

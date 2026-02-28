@@ -2,6 +2,7 @@
 export type {
   Permission,
   CommandOptions,
+  SimpleCommandOptions,
   CommandMetadata,
   CommandContext,
   CommandContext as Context, // Short alias for convenience
@@ -15,7 +16,20 @@ export type {
 export { BaseCommand } from './types';
 
 // Decorators
-export { Command, isCommand, getCommandOptions, buildCommandMetadata, Guard } from './decorators';
+export {
+  Command,
+  Stoat,
+  SimpleCommand,
+  Guard,
+  isCommand,
+  isStoatClass,
+  getCommandOptions,
+  getSimpleCommands,
+  buildCommandMetadata,
+  buildSimpleCommandMetadata,
+} from './decorators';
+
+export type { SimpleCommandDefinition } from './decorators';
 
 // Registry
 export { CommandRegistry } from './registry';

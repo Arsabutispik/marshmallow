@@ -1,15 +1,28 @@
 import * as path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {glob} from 'tinyglobby';
-import {buildCommandMetadata, getCommandOptions, isCommand} from './decorators';
+import {
+  buildCommandMetadata,
+  buildSimpleCommandMetadata,
+  getCommandOptions,
+  getSimpleCommands,
+  isCommand,
+  isStoatClass
+} from './decorators';
 import type {CommandConstructor, CommandMetadata, MallyCommand} from './types';
 
 /**
- * Stored command entry
+ * Stored command entry (supports both class-based and method-based commands)
  */
 export interface RegisteredCommand {
-  instance: MallyCommand;
+  /** Instance of the command class */
+  instance: MallyCommand | object;
+  /** Command metadata */
   metadata: CommandMetadata;
+  /** Method name to call (for @SimpleCommand methods) */
+  methodName?: string;
+  /** The original class constructor (for guard validation) */
+  classConstructor: Function;
 }
 
 /**
@@ -65,7 +78,12 @@ export class CommandRegistry {
   /**
    * Register a command instance
    */
-  register(instance: MallyCommand, metadata: CommandMetadata): void {
+  register(
+    instance: MallyCommand | object,
+    metadata: CommandMetadata,
+    classConstructor: Function,
+    methodName?: string
+  ): void {
     const name = metadata.name.toLowerCase();
 
     if (this.commands.has(name)) {
@@ -73,10 +91,14 @@ export class CommandRegistry {
       return;
     }
 
-    this.validateGuards(instance.constructor, metadata.name);
-    this.validateCooldown(instance, metadata);
+    this.validateGuards(classConstructor, metadata.name);
 
-    this.commands.set(name, { instance, metadata });
+    // Only validate cooldown for class-based commands that should implement onCooldown
+    if (!methodName) {
+      this.validateCooldown(instance as MallyCommand, metadata);
+    }
+
+    this.commands.set(name, { instance, metadata, methodName, classConstructor });
 
     for (const alias of metadata.aliases) {
       const aliasLower = alias.toLowerCase();
@@ -214,7 +236,40 @@ export class CommandRegistry {
       for (const exportKey of Object.keys(module)) {
         const exported = module[exportKey];
 
-        if (typeof exported !== 'function' || !isCommand(exported)) {
+        if (typeof exported !== 'function') {
+          continue;
+        }
+
+        // Handle @Stoat() decorated classes with @SimpleCommand() methods
+        if (isStoatClass(exported)) {
+          const instance = new (exported as new () => object)();
+          const simpleCommands = getSimpleCommands(exported);
+          const category = this.getCategoryFromPath(filePath, baseDir);
+
+          if (simpleCommands.length === 0) {
+            console.warn(
+              `[Mally] Class ${exported.name} is decorated with @Stoat but has no @SimpleCommand methods. Skipping...`
+            );
+            continue;
+          }
+
+          for (const cmdDef of simpleCommands) {
+            const method = (instance as any)[cmdDef.methodName];
+            if (typeof method !== 'function') {
+              console.warn(
+                `[Mally] Method ${cmdDef.methodName} not found on ${exported.name}. Skipping...`
+              );
+              continue;
+            }
+
+            const metadata = buildSimpleCommandMetadata(cmdDef.options, cmdDef.methodName, category);
+            this.register(instance, metadata, exported, cmdDef.methodName);
+          }
+          continue;
+        }
+
+        // Handle @Command decorated classes (legacy style)
+        if (!isCommand(exported)) {
           continue;
         }
 
@@ -238,7 +293,7 @@ export class CommandRegistry {
         // Inject metadata
         instance.metadata = metadata;
 
-        this.register(instance, metadata);
+        this.register(instance, metadata, exported);
       }
     } catch (error) {
       console.error(`[Mally] Failed to load command file: ${filePath}`, error);

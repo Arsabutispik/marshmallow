@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import {CommandRegistry, RegisteredCommand} from './registry';
-import type {CommandContext, CommandMetadata, MallyHandlerOptions, } from './types';
+import type {CommandContext, CommandMetadata, MallyCommand, MallyHandlerOptions, } from './types';
 import {Client, Message} from "stoat.js";
 
 /**
@@ -197,14 +197,16 @@ export class MallyHandler {
       return false;
     }
 
-    const { instance, metadata } = registered;
+    const { instance, metadata, methodName, classConstructor } = registered;
 
     // Owner-only check
     if (metadata.ownerOnly && !this.owners.has(ctx.authorId)) {
       await ctx.reply('This command is owner-only.');
       return false;
     }
-    const guards: Function[] = Reflect.getMetadata('mally:command:guards', instance.constructor) || [];
+
+    // Guard checks - use classConstructor for guard metadata
+    const guards: Function[] = Reflect.getMetadata('mally:command:guards', classConstructor) || [];
     for (const guardClass of guards) {
       const guardInstance = new (guardClass as any)();
       if (typeof guardInstance.run === 'function') {
@@ -219,18 +221,30 @@ export class MallyHandler {
         }
       }
     }
+
     // Cooldown check
     if (!this.checkCooldown(ctx.authorId, metadata)) {
       const remaining = this.getRemainingCooldown(ctx.authorId, metadata);
-      if (instance.onCooldown) {
-        await instance.onCooldown(ctx, remaining);
+
+      // For method-based commands, check if instance has onCooldown
+      if (typeof (instance as any).onCooldown === 'function') {
+        await (instance as any).onCooldown(ctx, remaining);
       } else {
         await ctx.reply(`Please wait ${(remaining / 1000).toFixed(1)} seconds before using this command again.`);
       }
       return false;
     }
-    await instance.run(ctx)
+
     try {
+      // Execute the command - either method-based or class-based
+      if (methodName) {
+        // Method-based command (@SimpleCommand)
+        await (instance as any)[methodName](ctx);
+      } else {
+        // Class-based command (@Command)
+        await (instance as MallyCommand).run(ctx);
+      }
+
       // Set cooldown after successful execution
       if (metadata.cooldown > 0) {
         this.setCooldown(ctx.authorId, metadata);
@@ -238,8 +252,9 @@ export class MallyHandler {
 
       return true;
     } catch (error) {
-      if (instance.onError) {
-        await instance.onError(ctx, error as Error);
+      // Handle errors
+      if (typeof (instance as any).onError === 'function') {
+        await (instance as any).onError(ctx, error as Error);
       } else {
         console.error(`[Mally] Error in command ${metadata.name}:`, error);
         await ctx.reply(`An error occurred: ${(error as Error).message}`);
