@@ -6,7 +6,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node --env-file=.env dist/index.js"
+    "start": "node --env-file=.env dist/index.js",
+    "format": "prettier --write ."
   },
   "private": "true",
   "keywords": [],
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.33",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "prettier": "^3.8.1"
   }
 }
