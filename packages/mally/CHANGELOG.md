@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- [`98ee537`](https://github.com/Arsabutispik/marshmallow/commit/98ee537645ea10db4370f00ca18a31af8aee6842) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Fix readme where it mentions @marshmallow instead of @marshmallow-stoat
+
 ## 0.1.0
 
 ### Minor Changes
