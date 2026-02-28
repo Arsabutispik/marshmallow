@@ -1,5 +1,5 @@
 import { Client } from "stoat.js";
-import { MallyHandler } from "@marshmallow/mally";
+import { MallyHandler } from "@marshmallow-stoat/mally";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { env } from "./env.js";

@@ -17,7 +17,7 @@ importers:
 
   apps/bot:
     dependencies:
-      '@marshmallow/mally':
+      '@marshmallow-stoat/mally':
         specifier: workspace:*
         version: link:../../packages/mally
       stoat.js:
