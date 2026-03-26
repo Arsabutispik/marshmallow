@@ -9,6 +9,7 @@ export type {
   MallyCommand,
   CommandConstructor,
   MallyHandlerOptions,
+  MallyDiscoveryOptions,
   MallyGuard,
 } from "./types";
 

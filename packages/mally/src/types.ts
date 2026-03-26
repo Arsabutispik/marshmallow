@@ -166,13 +166,27 @@ export abstract class BaseCommand implements MallyCommand {
 export type CommandConstructor = new () => MallyCommand;
 
 /**
+ * Discovery options for automatic command module loading
+ */
+export interface MallyDiscoveryOptions {
+  /** Root directories to scan (default: [process.cwd()]) */
+  roots?: string[];
+  /** Glob patterns relative to each root (default: based on `extensions`) */
+  include?: string[];
+  /** Additional ignore patterns */
+  ignore?: string[];
+}
+
+/**
  * Handler options
  */
 export interface MallyHandlerOptions {
   /** The client instance */
   client: Client;
-  /** Directory to scan for commands (absolute path) */
-  commandsDir: string;
+  /** Directory to scan for commands (absolute path, legacy mode) */
+  commandsDir?: string;
+  /** Auto-discovery options used when commandsDir is not provided */
+  discovery?: MallyDiscoveryOptions;
   /** Command prefix or prefix resolver function */
   prefix: string | ((ctx: { serverId?: string }) => string | Promise<string>);
   /** Owner IDs for owner-only commands */

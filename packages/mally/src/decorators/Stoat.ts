@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { METADATA_KEYS } from "./keys";
+import { decoratorStore } from "./store";
 
 /**
  * @Stoat
@@ -27,6 +28,7 @@ import { METADATA_KEYS } from "./keys";
 export function Stoat(): ClassDecorator {
   return (target: Function) => {
     Reflect.defineMetadata(METADATA_KEYS.IS_STOAT_CLASS, true, target);
+    decoratorStore.registerStoatClass(target);
   };
 }
 
