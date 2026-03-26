@@ -5,7 +5,7 @@ import { METADATA_KEYS } from "./keys";
  * @Guard
  * Runs before a command to check if it should execute.
  * Should return true to allow execution, false to block.
- * Can be applied to both @Command classes and @Stoat classes.
+ * Applied on @Stoat classes to guard all contained @SimpleCommand methods.
  *
  * @example
  * ```ts

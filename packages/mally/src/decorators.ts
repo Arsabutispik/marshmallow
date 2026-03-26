@@ -15,11 +15,6 @@ export {
   SimpleCommand,
   getSimpleCommands,
 
-  // Command (legacy class-based decorator)
-  Command,
-  isCommand,
-  getCommandOptions,
-  buildCommandMetadata,
 
   // Guard
   Guard,

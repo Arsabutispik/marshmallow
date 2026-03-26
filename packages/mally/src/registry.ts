@@ -3,14 +3,11 @@ import * as fs from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { glob } from "tinyglobby";
 import {
-  buildCommandMetadata,
   buildSimpleCommandMetadata,
-  getCommandOptions,
   getSimpleCommands,
-  isCommand,
 } from "./decorators";
 import { decoratorStore } from "./decorators/store";
-import type { CommandConstructor, CommandMetadata, MallyCommand } from "./types";
+import type { CommandMetadata } from "./types";
 
 interface AutoDiscoveryOptions {
   roots?: string[];
@@ -19,15 +16,15 @@ interface AutoDiscoveryOptions {
 }
 
 /**
- * Stored command entry (supports both class-based and method-based commands)
+ * Stored command entry from @Stoat/@SimpleCommand registration.
  */
 export interface RegisteredCommand {
-  /** Instance of the command class */
-  instance: MallyCommand | object;
+  /** Instance of the @Stoat class */
+  instance: object;
   /** Command metadata */
   metadata: CommandMetadata;
-  /** Method name to call (for @SimpleCommand methods) */
-  methodName?: string;
+  /** Method name to call */
+  methodName: string;
   /** The original class constructor (for guard validation) */
   classConstructor: Function;
 }
@@ -149,10 +146,10 @@ export class CommandRegistry {
    * Register a command instance
    */
   register(
-    instance: MallyCommand | object,
+    instance: object,
     metadata: CommandMetadata,
     classConstructor: Function,
-    methodName?: string,
+    methodName: string,
   ): void {
     const name = metadata.name.toLowerCase();
 
@@ -162,11 +159,6 @@ export class CommandRegistry {
     }
 
     this.validateGuards(classConstructor, metadata.name);
-
-    // Only validate cooldown for class-based commands that should implement onCooldown
-    if (!methodName) {
-      this.validateCooldown(instance as MallyCommand, metadata);
-    }
 
     this.commands.set(name, { instance, metadata, methodName, classConstructor });
 
@@ -287,66 +279,13 @@ export class CommandRegistry {
   }
 
   /**
-   * Validate that commands with cooldowns implement the onCooldown method
-   * @param instance
-   * @param metadata
-   * @private
-   */
-  private validateCooldown(instance: MallyCommand, metadata: CommandMetadata): void {
-    if (metadata.cooldown > 0 && typeof instance.onCooldown !== "function") {
-      console.error(
-        `[Mally] FATAL: Command "${metadata.name}" has a cooldown of ${metadata.cooldown}ms but does not implement onCooldown() method.`,
-      );
-      console.error(
-        `[Mally] Commands with cooldowns must implement onCooldown(ctx, remaining) to handle cooldown messages.`,
-      );
-      process.exit(1);
-    }
-  }
-
-  /**
    * Load commands from a single file
    */
   private async loadFile(filePath: string, baseDir: string): Promise<void> {
     try {
       const knownStoatClasses = new Set(decoratorStore.getStoatClasses().keys());
       const fileUrl = pathToFileURL(filePath).href;
-      const module = await import(fileUrl);
-
-      for (const exportKey of Object.keys(module)) {
-        const exported = module[exportKey];
-
-        if (typeof exported !== "function") {
-          continue;
-        }
-
-        // Handle @Command decorated classes (legacy style)
-        if (!isCommand(exported)) {
-          continue;
-        }
-
-        const options = getCommandOptions(exported);
-        if (!options) continue;
-
-        // Validate that the class implements MallyCommand
-        const instance = new (exported as CommandConstructor)();
-
-        if (typeof instance.run !== "function") {
-          console.warn(
-            `[Mally] Class ${exported.name} is decorated with @Command but does not implement run() method. Skipping...`,
-          );
-          continue;
-        }
-
-        // Derive category from directory structure
-        const category = this.getCategoryFromPath(filePath, baseDir);
-        const metadata = buildCommandMetadata(exported, options, category);
-
-        // Inject metadata
-        instance.metadata = metadata;
-
-        this.register(instance, metadata, exported);
-      }
+      await import(fileUrl);
 
       const allStoatClasses = decoratorStore.getStoatClasses();
       for (const [stoatClass, stoatInstance] of allStoatClasses.entries()) {

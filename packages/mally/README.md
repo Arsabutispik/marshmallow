@@ -211,23 +211,7 @@ const tsRuntimeHandler = new MallyHandler({
 });
 ```
 
-## Legacy Class-Based Commands
-
-You can also use the class-based approach:
-
-```typescript
-import { Command, BaseCommand, Context } from '@marshmallow-stoat/mally';
-
-@Command({
-  name: 'ping',
-  description: 'Ping command',
-})
-export class PingCommand extends BaseCommand {
-  async run(ctx: Context) {
-    await ctx.reply('Pong!');
-  }
-}
-```
+All commands are defined through `@Stoat()` classes and `@SimpleCommand()` methods.
 
 ## License
 

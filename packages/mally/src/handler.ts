@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { CommandRegistry, RegisteredCommand } from "./registry";
-import type { CommandContext, CommandMetadata, MallyCommand, MallyDiscoveryOptions, MallyHandlerOptions } from "./types";
+import type { CommandContext, CommandMetadata, MallyDiscoveryOptions, MallyHandlerOptions } from "./types";
 import { Client, Message } from "stoat.js";
 
 /**
@@ -242,14 +242,7 @@ export class MallyHandler {
     }
 
     try {
-      // Execute the command - either method-based or class-based
-      if (methodName) {
-        // Method-based command (@SimpleCommand)
-        await (instance as any)[methodName](ctx);
-      } else {
-        // Class-based command (@Command)
-        await (instance as MallyCommand).run(ctx);
-      }
+      await (instance as any)[methodName](ctx);
 
       // Set cooldown after successful execution
       if (metadata.cooldown > 0) {

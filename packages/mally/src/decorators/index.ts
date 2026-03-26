@@ -1,7 +1,6 @@
 // Re-export all decorators
 export { Stoat, isStoatClass } from "./Stoat";
 export { SimpleCommand, getSimpleCommands } from "./SimpleCommand";
-export { Command, isCommand, getCommandOptions, buildCommandMetadata } from "./Command";
 export { Guard, getGuards } from "./Guard";
 
 // Types
