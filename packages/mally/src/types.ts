@@ -191,7 +191,7 @@ export interface MallyHandlerOptions {
   prefix: string | ((ctx: { serverId?: string }) => string | Promise<string>);
   /** Owner IDs for owner-only commands */
   owners?: string[];
-  /** File extensions to load (default: ['.js', '.ts']) */
+  /** File extensions to load (default: ['.js', '.mjs', '.cjs']) */
   extensions?: string[];
   /** Disable mention prefix support (default: false) */
   disableMentionPrefix?: boolean;

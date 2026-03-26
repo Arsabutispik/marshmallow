@@ -171,9 +171,12 @@ interface MallyHandlerOptions {
   };
   prefix: string | ((ctx: { serverId?: string }) => string | Promise<string>);
   owners?: string[];             // Owner user IDs
-  extensions?: string[];         // File extensions (default: ['.js', '.ts'])
+  extensions?: string[];         // File extensions (default: ['.js', '.mjs', '.cjs'])
   disableMentionPrefix?: boolean; // Disable @bot prefix
 }
+
+// Default auto-discovery scans `**/commands/**/*` under process.cwd()
+// using JS extensions, so compiled outputs like `dist/commands/*.js` work out of the box.
 ```
 
 ## Dynamic Prefix
@@ -193,6 +196,16 @@ const scopedHandler = new MallyHandler({
   prefix: '!',
   discovery: {
     roots: [process.cwd()],
+    include: ['apps/bot/dist/commands/**/*.js'],
+  },
+});
+
+// TypeScript source discovery is opt-in and requires a TS runtime loader (tsx/ts-node)
+const tsRuntimeHandler = new MallyHandler({
+  client,
+  prefix: '!',
+  extensions: ['.ts'],
+  discovery: {
     include: ['apps/bot/src/commands/**/*.ts'],
   },
 });

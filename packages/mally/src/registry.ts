@@ -46,7 +46,6 @@ export interface RegisteredCommand {
 export class CommandRegistry {
   private static readonly DEFAULT_AUTO_DISCOVERY_IGNORES = [
     "**/node_modules/**",
-    "**/dist/**",
     "**/.git/**",
     "**/*.d.ts",
     "**/*.test.*",
@@ -58,7 +57,7 @@ export class CommandRegistry {
   private readonly extensions: string[];
   private readonly processedStoatClasses: Set<Function> = new Set();
 
-  constructor(extensions: string[] = [".js", ".ts"]) {
+  constructor(extensions: string[] = [".js", ".mjs", ".cjs"]) {
     this.extensions = extensions;
   }
 
@@ -96,7 +95,7 @@ export class CommandRegistry {
     const roots = options.roots?.length ? options.roots : [process.cwd()];
     const includePatterns = options.include?.length
       ? options.include
-      : this.extensions.map((ext) => `**/*${ext}`);
+      : this.extensions.map((ext) => `**/commands/**/*${ext}`);
 
     const patterns = roots.flatMap((root) =>
       includePatterns.map((pattern) => path.join(root, pattern).replace(/\\/g, "/")),
