@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { CommandRegistry, RegisteredCommand } from "./registry";
-import type { CommandContext, CommandMetadata, MallyCommand, MallyHandlerOptions } from "./types";
+import type { CommandContext, CommandMetadata, MallyCommand, MallyDiscoveryOptions, MallyHandlerOptions } from "./types";
 import { Client, Message } from "stoat.js";
 
 /**
@@ -17,7 +17,6 @@ import { Client, Message } from "stoat.js";
  *
  * const handler = new MallyHandler({
  *   client,
- *   commandsDir: path.join(__dirname, 'commands'),
  *   prefix: '!',
  *   owners: ['owner-user-id'],
  * });
@@ -30,7 +29,8 @@ import { Client, Message } from "stoat.js";
  * ```
  */
 export class MallyHandler {
-  private readonly commandsDir: string;
+  private readonly commandsDir?: string;
+  private readonly discoveryOptions?: MallyDiscoveryOptions;
   private readonly prefixResolver: string | ((ctx: { serverId?: string }) => string | Promise<string>);
   private readonly owners: Set<string>;
   private readonly registry: CommandRegistry;
@@ -40,6 +40,7 @@ export class MallyHandler {
   constructor(options: MallyHandlerOptions) {
     this.client = options.client;
     this.commandsDir = options.commandsDir;
+    this.discoveryOptions = options.discovery;
     this.prefixResolver = options.prefix;
     this.owners = new Set(options.owners ?? []);
     this.registry = new CommandRegistry(options.extensions);
@@ -50,7 +51,12 @@ export class MallyHandler {
    * Initialize the handler - load all commands
    */
   async init(): Promise<void> {
-    await this.registry.loadFromDirectory(this.commandsDir);
+    if (this.commandsDir) {
+      await this.registry.loadFromDirectory(this.commandsDir);
+      return;
+    }
+
+    await this.registry.autoDiscover(this.discoveryOptions);
   }
 
   /**
@@ -290,7 +296,12 @@ export class MallyHandler {
   async reload(): Promise<void> {
     this.registry.clear();
     this.cooldowns.clear();
-    await this.registry.loadFromDirectory(this.commandsDir);
+    if (this.commandsDir) {
+      await this.registry.loadFromDirectory(this.commandsDir);
+      return;
+    }
+
+    await this.registry.autoDiscover(this.discoveryOptions);
   }
 
   /**

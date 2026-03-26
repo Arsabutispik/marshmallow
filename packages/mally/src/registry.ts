@@ -1,4 +1,5 @@
 import * as path from "node:path";
+import * as fs from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { glob } from "tinyglobby";
 import {
@@ -7,9 +8,15 @@ import {
   getCommandOptions,
   getSimpleCommands,
   isCommand,
-  isStoatClass,
 } from "./decorators";
+import { decoratorStore } from "./decorators/store";
 import type { CommandConstructor, CommandMetadata, MallyCommand } from "./types";
+
+interface AutoDiscoveryOptions {
+  roots?: string[];
+  include?: string[];
+  ignore?: string[];
+}
 
 /**
  * Stored command entry (supports both class-based and method-based commands)
@@ -38,11 +45,20 @@ export interface RegisteredCommand {
  * ```
  */
 export class CommandRegistry {
+  private static readonly DEFAULT_AUTO_DISCOVERY_IGNORES = [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/*.d.ts",
+    "**/*.test.*",
+    "**/*.spec.*",
+  ];
+
   private readonly commands: Map<string, RegisteredCommand> = new Map();
   private readonly aliases: Map<string, string> = new Map();
   private readonly extensions: string[];
+  private readonly processedStoatClasses: Set<Function> = new Set();
 
-  constructor(extensions: string[] = [".js", ".ts"]) {
+  constructor(extensions: string[] = [".js", ".mjs", ".cjs"]) {
     this.extensions = extensions;
   }
 
@@ -71,6 +87,62 @@ export class CommandRegistry {
     }
 
     console.log(`[Mally] Loaded ${this.commands.size} command(s)`);
+  }
+
+  /**
+   * Auto-discover command files across one or more roots.
+   */
+  async autoDiscover(options: AutoDiscoveryOptions = {}): Promise<void> {
+    const roots = options.roots?.length ? options.roots : [process.cwd()];
+    const includePatterns = options.include?.length
+      ? options.include
+      : this.getDefaultAutoDiscoveryPatterns();
+
+    const patterns = roots.flatMap((root) =>
+      includePatterns.map((pattern) => path.join(root, pattern).replace(/\\/g, "/")),
+    );
+
+    const files = await glob(patterns, {
+      ignore: [...CommandRegistry.DEFAULT_AUTO_DISCOVERY_IGNORES, ...(options.ignore ?? [])],
+      absolute: true,
+    });
+
+    const uniqueFiles = [...new Set(files)];
+    let candidateFiles = 0;
+    for (const file of uniqueFiles) {
+      if (!(await this.isLikelyCommandModule(file))) {
+        continue;
+      }
+      candidateFiles++;
+
+      const baseDir = roots.find((root) => {
+        const relative = path.relative(root, file);
+        return relative && !relative.startsWith("..") && !path.isAbsolute(relative);
+      }) ?? roots[0];
+      await this.loadFile(file, baseDir);
+    }
+
+    console.log(`[Mally] Auto-discovered ${candidateFiles} candidate file(s), loaded ${this.commands.size} command(s)`);
+  }
+
+  private getDefaultAutoDiscoveryPatterns(): string[] {
+    // discordx-like default: scan broadly, then register only decorated classes
+    return this.extensions.map((ext) => `**/*${ext}`);
+  }
+
+  private async isLikelyCommandModule(filePath: string): Promise<boolean> {
+    try {
+      const source = await fs.readFile(filePath, "utf8");
+      return (
+        source.includes("Stoat") ||
+        source.includes("SimpleCommand") ||
+        source.includes("Command") ||
+        source.includes("mally:command")
+      );
+    } catch {
+      // If the file can't be pre-read, fall back to attempting import.
+      return true;
+    }
   }
 
   /**
@@ -161,6 +233,7 @@ export class CommandRegistry {
   clear(): void {
     this.commands.clear();
     this.aliases.clear();
+    this.processedStoatClasses.clear();
   }
 
   /**
@@ -236,6 +309,7 @@ export class CommandRegistry {
    */
   private async loadFile(filePath: string, baseDir: string): Promise<void> {
     try {
+      const knownStoatClasses = new Set(decoratorStore.getStoatClasses().keys());
       const fileUrl = pathToFileURL(filePath).href;
       const module = await import(fileUrl);
 
@@ -243,32 +317,6 @@ export class CommandRegistry {
         const exported = module[exportKey];
 
         if (typeof exported !== "function") {
-          continue;
-        }
-
-        // Handle @Stoat() decorated classes with @SimpleCommand() methods
-        if (isStoatClass(exported)) {
-          const instance = new (exported as new () => object)();
-          const simpleCommands = getSimpleCommands(exported);
-          const category = this.getCategoryFromPath(filePath, baseDir);
-
-          if (simpleCommands.length === 0) {
-            console.warn(
-              `[Mally] Class ${exported.name} is decorated with @Stoat but has no @SimpleCommand methods. Skipping...`,
-            );
-            continue;
-          }
-
-          for (const cmdDef of simpleCommands) {
-            const method = (instance as any)[cmdDef.methodName];
-            if (typeof method !== "function") {
-              console.warn(`[Mally] Method ${cmdDef.methodName} not found on ${exported.name}. Skipping...`);
-              continue;
-            }
-
-            const metadata = buildSimpleCommandMetadata(cmdDef.options, cmdDef.methodName, category);
-            this.register(instance, metadata, exported, cmdDef.methodName);
-          }
           continue;
         }
 
@@ -299,9 +347,48 @@ export class CommandRegistry {
 
         this.register(instance, metadata, exported);
       }
+
+      const allStoatClasses = decoratorStore.getStoatClasses();
+      for (const [stoatClass, stoatInstance] of allStoatClasses.entries()) {
+        if (knownStoatClasses.has(stoatClass) || this.processedStoatClasses.has(stoatClass)) {
+          continue;
+        }
+        this.registerStoatClassCommands(stoatClass, stoatInstance, filePath, baseDir);
+      }
     } catch (error) {
       console.error(`[Mally] Failed to load command file: ${filePath}`, error);
     }
+  }
+
+  private registerStoatClassCommands(
+    stoatClass: Function,
+    instance: object,
+    filePath: string,
+    baseDir: string,
+  ): void {
+    const simpleCommands = getSimpleCommands(stoatClass);
+    const category = this.getCategoryFromPath(filePath, baseDir);
+
+    if (simpleCommands.length === 0) {
+      console.warn(
+        `[Mally] Class ${stoatClass.name} is decorated with @Stoat but has no @SimpleCommand methods. Skipping...`,
+      );
+      this.processedStoatClasses.add(stoatClass);
+      return;
+    }
+
+    for (const cmdDef of simpleCommands) {
+      const method = (instance as any)[cmdDef.methodName];
+      if (typeof method !== "function") {
+        console.warn(`[Mally] Method ${cmdDef.methodName} not found on ${stoatClass.name}. Skipping...`);
+        continue;
+      }
+
+      const metadata = buildSimpleCommandMetadata(cmdDef.options, cmdDef.methodName, category);
+      this.register(instance, metadata, stoatClass, cmdDef.methodName);
+    }
+
+    this.processedStoatClasses.add(stoatClass);
   }
 
   /**

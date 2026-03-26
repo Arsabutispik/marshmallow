@@ -38,15 +38,13 @@ Make sure to enable decorators in your `tsconfig.json`:
 import 'reflect-metadata';
 import { Client } from 'stoat.js';
 import { MallyHandler } from '@marshmallow-stoat/mally';
-import { join } from 'path';
 
 const client = new Client();
 
 const handler = new MallyHandler({
     client, 
     prefix: '!', 
-    owners: ['your-user-id'], 
-    commandsDir: join(__dirname, "commands")
+    owners: ['your-user-id']
 });
 
 await handler.init();
@@ -78,7 +76,7 @@ export class GeneralCommands {
 }
 ```
 
-That's it! No manual imports needed - commands are auto-discovered.
+That's it! No manual imports needed - decorated command classes are auto-discovered.
 
 ## Decorators
 
@@ -165,12 +163,20 @@ interface Context {
 ```typescript
 interface MallyHandlerOptions {
   client: Client;
-  commandsDir: string;           // Directory to scan for commands
+  commandsDir?: string;          // Legacy mode: explicitly scan this directory
+  discovery?: {
+    roots?: string[];            // Default: [process.cwd()]
+    include?: string[];          // Glob patterns per root
+    ignore?: string[];           // Additional ignore globs
+  };
   prefix: string | ((ctx: { serverId?: string }) => string | Promise<string>);
   owners?: string[];             // Owner user IDs
-  extensions?: string[];         // File extensions (default: ['.js', '.ts'])
+  extensions?: string[];         // File extensions (default: ['.js', '.mjs', '.cjs'])
   disableMentionPrefix?: boolean; // Disable @bot prefix
 }
+
+// Default auto-discovery is discordx-like: scans broadly under process.cwd(),
+// then registers only files that look like decorated command modules.
 ```
 
 ## Dynamic Prefix
@@ -178,10 +184,29 @@ interface MallyHandlerOptions {
 ```typescript
 const handler = new MallyHandler({
   client,
-  commandsDir: join(__dirname, 'commands'),
   prefix: async ({ serverId }) => {
     // Fetch from database, etc.
     return serverId ? await getServerPrefix(serverId) : '!';
+  },
+});
+
+// Optional: constrain auto-discovery to specific roots/patterns
+const scopedHandler = new MallyHandler({
+  client,
+  prefix: '!',
+  discovery: {
+    roots: [process.cwd()],
+    include: ['apps/bot/dist/commands/**/*.js'],
+  },
+});
+
+// TypeScript source discovery is opt-in and requires a TS runtime loader (tsx/ts-node)
+const tsRuntimeHandler = new MallyHandler({
+  client,
+  prefix: '!',
+  extensions: ['.ts'],
+  discovery: {
+    include: ['apps/bot/src/commands/**/*.ts'],
   },
 });
 ```
