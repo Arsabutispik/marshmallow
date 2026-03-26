@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0
+
+### Minor Changes
+
+- [#4](https://github.com/Arsabutispik/marshmallow/pull/4) [`c3b6fe4`](https://github.com/Arsabutispik/marshmallow/commit/c3b6fe4495f34afe5fb50566de127dd5eedcd340) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Implement auto-discovery for command modules
+
+- [#6](https://github.com/Arsabutispik/marshmallow/pull/6) [`3ebc14f`](https://github.com/Arsabutispik/marshmallow/commit/3ebc14fdf063745326aeb285afdbf7e70b0232c8) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - - Removed legacy class-based command APIs: `@Command()`, `BaseCommand`, `CommandOptions`, `MallyCommand`, and `CommandConstructor`.
+
 ## 0.1.2
 
 ### Patch Changes
