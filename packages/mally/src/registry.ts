@@ -1,4 +1,5 @@
 import * as path from "node:path";
+import * as fs from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { glob } from "tinyglobby";
 import {
@@ -95,7 +96,7 @@ export class CommandRegistry {
     const roots = options.roots?.length ? options.roots : [process.cwd()];
     const includePatterns = options.include?.length
       ? options.include
-      : this.extensions.map((ext) => `**/commands/**/*${ext}`);
+      : this.getDefaultAutoDiscoveryPatterns();
 
     const patterns = roots.flatMap((root) =>
       includePatterns.map((pattern) => path.join(root, pattern).replace(/\\/g, "/")),
@@ -107,7 +108,13 @@ export class CommandRegistry {
     });
 
     const uniqueFiles = [...new Set(files)];
+    let candidateFiles = 0;
     for (const file of uniqueFiles) {
+      if (!(await this.isLikelyCommandModule(file))) {
+        continue;
+      }
+      candidateFiles++;
+
       const baseDir = roots.find((root) => {
         const relative = path.relative(root, file);
         return relative && !relative.startsWith("..") && !path.isAbsolute(relative);
@@ -115,7 +122,27 @@ export class CommandRegistry {
       await this.loadFile(file, baseDir);
     }
 
-    console.log(`[Mally] Auto-discovered ${uniqueFiles.length} file(s), loaded ${this.commands.size} command(s)`);
+    console.log(`[Mally] Auto-discovered ${candidateFiles} candidate file(s), loaded ${this.commands.size} command(s)`);
+  }
+
+  private getDefaultAutoDiscoveryPatterns(): string[] {
+    // discordx-like default: scan broadly, then register only decorated classes
+    return this.extensions.map((ext) => `**/*${ext}`);
+  }
+
+  private async isLikelyCommandModule(filePath: string): Promise<boolean> {
+    try {
+      const source = await fs.readFile(filePath, "utf8");
+      return (
+        source.includes("Stoat") ||
+        source.includes("SimpleCommand") ||
+        source.includes("Command") ||
+        source.includes("mally:command")
+      );
+    } catch {
+      // If the file can't be pre-read, fall back to attempting import.
+      return true;
+    }
   }
 
   /**

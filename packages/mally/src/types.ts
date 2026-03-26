@@ -171,7 +171,7 @@ export type CommandConstructor = new () => MallyCommand;
 export interface MallyDiscoveryOptions {
   /** Root directories to scan (default: [process.cwd()]) */
   roots?: string[];
-  /** Glob patterns relative to each root (default: based on `extensions`) */
+  /** Glob patterns relative to each root */
   include?: string[];
   /** Additional ignore patterns */
   ignore?: string[];

@@ -166,7 +166,7 @@ interface MallyHandlerOptions {
   commandsDir?: string;          // Legacy mode: explicitly scan this directory
   discovery?: {
     roots?: string[];            // Default: [process.cwd()]
-    include?: string[];          // Glob patterns per root (default uses `extensions`)
+    include?: string[];          // Glob patterns per root
     ignore?: string[];           // Additional ignore globs
   };
   prefix: string | ((ctx: { serverId?: string }) => string | Promise<string>);
@@ -175,8 +175,8 @@ interface MallyHandlerOptions {
   disableMentionPrefix?: boolean; // Disable @bot prefix
 }
 
-// Default auto-discovery scans `**/commands/**/*` under process.cwd()
-// using JS extensions, so compiled outputs like `dist/commands/*.js` work out of the box.
+// Default auto-discovery is discordx-like: scans broadly under process.cwd(),
+// then registers only files that look like decorated command modules.
 ```
 
 ## Dynamic Prefix
