@@ -1,7 +1,7 @@
 {
-  "name": "@marshmallow-stoat/docs",
+  "name": "@stoatx/docs",
   "version": "0.0.0",
-  "description": "Documentation for Marshmallow bot",
+  "description": "Documentation for stoatx bot",
   "main": "dist/index.js",
   "scripts": {
     "dev": "echo \"Development server not configured yet\"",

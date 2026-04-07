@@ -4,27 +4,27 @@
 
 ### Minor Changes
 
-- [#4](https://github.com/Arsabutispik/marshmallow/pull/4) [`c3b6fe4`](https://github.com/Arsabutispik/marshmallow/commit/c3b6fe4495f34afe5fb50566de127dd5eedcd340) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Implement auto-discovery for command modules
+- [#4](https://github.com/ispik/stoatx/pull/4) [`c3b6fe4`](https://github.com/ispik/stoatx/commit/c3b6fe4495f34afe5fb50566de127dd5eedcd340) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Implement auto-discovery for command modules
 
-- [#6](https://github.com/Arsabutispik/marshmallow/pull/6) [`3ebc14f`](https://github.com/Arsabutispik/marshmallow/commit/3ebc14fdf063745326aeb285afdbf7e70b0232c8) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - - Removed legacy class-based command APIs: `@Command()`, `BaseCommand`, `CommandOptions`, `MallyCommand`, and `CommandConstructor`.
+- [#6](https://github.com/ispik/stoatx/pull/6) [`3ebc14f`](https://github.com/ispik/stoatx/commit/3ebc14fdf063745326aeb285afdbf7e70b0232c8) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - - Removed legacy class-based command APIs: `@Command()`, `BaseCommand`, `CommandOptions`, `MallyCommand`, and `CommandConstructor`.
 
 ## 0.1.2
 
 ### Patch Changes
 
-- [`5cf626c`](https://github.com/Arsabutispik/marshmallow/commit/5cf626c4159580d43469458aa12efc1db79b9b19) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Fix package.json
+- [`5cf626c`](https://github.com/ispik/stoatx/commit/5cf626c4159580d43469458aa12efc1db79b9b19) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Fix package.json
 
 ## 0.1.1
 
 ### Patch Changes
 
-- [`98ee537`](https://github.com/Arsabutispik/marshmallow/commit/98ee537645ea10db4370f00ca18a31af8aee6842) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Fix readme where it mentions @marshmallow instead of @marshmallow-stoat
+- [`98ee537`](https://github.com/ispik/stoatx/commit/98ee537645ea10db4370f00ca18a31af8aee6842) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Fix readme where it mentions @marshmallow instead of @stoatx
 
 ## 0.1.0
 
 ### Minor Changes
 
-- [`f8a9da8`](https://github.com/Arsabutispik/marshmallow/commit/f8a9da821b5e5873ed7ab1a86740366a9832e5f7) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Initial release of @marshmallow/mally - a decorator-based command handler for the Stoat ecosystem.
+- [`f8a9da8`](https://github.com/ispik/stoatx/commit/f8a9da821b5e5873ed7ab1a86740366a9832e5f7) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Initial release of stoatx - a decorator-based command handler for the Stoat ecosystem.
 
   ### Features
   - **Decorator System**: `@Stoat()`, `@SimpleCommand()`, `@Guard()`, `@Command()` decorators
@@ -79,4 +79,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-This is the initial release of `@marshmallow/mally`. The API is considered unstable and may change in future minor versions until 1.0.0.
+This is the initial release of `stoatx`. The API is considered unstable and may change in future minor versions until 1.0.0.

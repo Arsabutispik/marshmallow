@@ -9,7 +9,7 @@ import { METADATA_KEYS } from "./keys";
  *
  * @example
  * ```ts
- * import { Guard, Stoat, SimpleCommand, CommandContext } from '@marshmallow/mally';
+ * import { Guard, Stoat, SimpleCommand, CommandContext } from 'stoatx';
  *
  * // Define a guard
  * class NotBot implements MallyGuard {

@@ -1,4 +1,4 @@
-# Marshmallow Monorepo
+# StoatX Monorepo
 
 A monorepo project containing a bot for the Stoat platform and its documentation.
 

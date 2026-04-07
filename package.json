@@ -1,5 +1,5 @@
 {
-  "name": "marshmallow-stoat-monorepo",
+  "name": "stoatx-monorepo",
   "version": "1.0.0",
   "description": "Moderation bot for Stoat and documentation fot the bot",
   "private": true,
@@ -11,7 +11,7 @@
     "format": "pnpm -r format"
   },
   "keywords": ["stoat", "moderation", "bot", "documentation", "stoatbot"],
-  "homepage": "https://docs.marshmallow-stoat.com",
+  "homepage": "https://docs.stoatx.com",
   "author": "ispik <ispik@ispik.dev>",
   "license": "AGPL-3.0-or-later",
   "packageManager": "pnpm@10.28.0",

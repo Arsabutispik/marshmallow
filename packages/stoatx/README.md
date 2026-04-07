@@ -1,4 +1,4 @@
-# @marshmallow-stoat/mally
+# stoatx
 
 A high-performance, decorator-based command handler for the [Stoat](https://github.com/stoatchat/javascript-client-sdk) ecosystem. Inspired by [discordx](https://github.com/discordx-ts/discordx).
 
@@ -13,9 +13,9 @@ A high-performance, decorator-based command handler for the [Stoat](https://gith
 ## Installation
 
 ```bash
-npm install @marshmallow-stoat/mally reflect-metadata
+npm install stoatx reflect-metadata
 # or
-pnpm add @marshmallow-stoat/mally reflect-metadata
+pnpm add stoatx reflect-metadata
 ```
 
 Make sure to enable decorators in your `tsconfig.json`:
@@ -37,7 +37,7 @@ Make sure to enable decorators in your `tsconfig.json`:
 // index.ts
 import 'reflect-metadata';
 import { Client } from 'stoat.js';
-import { MallyHandler } from '@marshmallow-stoat/mally';
+import { MallyHandler } from 'stoatx';
 
 const client = new Client();
 
@@ -60,7 +60,7 @@ client.login('your-token');
 
 ```typescript
 // commands/general.ts
-import { Stoat, SimpleCommand, Context } from '@marshmallow-stoat/mally';
+import { Stoat, SimpleCommand, Context } from 'stoatx';
 
 @Stoat()
 export class GeneralCommands {
@@ -115,7 +115,7 @@ async ban(ctx: Context) {
 Adds a guard check before command execution.
 
 ```typescript
-import { Stoat, SimpleCommand, Guard, MallyGuard, Context } from '@marshmallow-stoat/mally';
+import { Stoat, SimpleCommand, Guard, MallyGuard, Context } from 'stoatx';
 
 // Define a guard
 class IsAdmin implements MallyGuard {

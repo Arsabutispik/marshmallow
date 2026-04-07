@@ -1,10 +1,10 @@
 {
-  "name": "@marshmallow-stoat/mally",
+  "name": "stoatx",
   "version": "0.2.0",
   "description": "A high-performance, decorator-based command handler for the Stoat ecosystem.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Arsabutispik/marshmallow"
+    "url": "https://github.com/Arsabutispik/stoatx"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

@@ -17,12 +17,12 @@ importers:
 
   apps/bot:
     dependencies:
-      '@marshmallow-stoat/mally':
-        specifier: workspace:*
-        version: link:../../packages/mally
       stoat.js:
         specifier: ^7.3.6
         version: 7.3.6
+      stoatx:
+        specifier: workspace:*
+        version: link:../../packages/stoatx
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -39,7 +39,7 @@ importers:
 
   apps/docs: {}
 
-  packages/mally:
+  packages/stoatx:
     dependencies:
       reflect-metadata:
         specifier: ^0.2.2

@@ -9,7 +9,7 @@ import { decoratorStore } from "./store";
  *
  * @example
  * ```ts
- * import { Stoat, SimpleCommand, CommandContext } from '@marshmallow/mally';
+ * import { Stoat, SimpleCommand, CommandContext } from 'stoatx';
  *
  * @Stoat()
  * class ModerationCommands {
