@@ -1,4 +1,4 @@
 # Documentation
 
-Documentation for the Marshmallow bot.
+Documentation for the StoatX bot.
 

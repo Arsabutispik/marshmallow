@@ -1,5 +1,5 @@
 import { Client } from "stoat.js";
-import { MallyHandler } from "@marshmallow-stoat/mally";
+import { MallyHandler } from "stoatx";
 import { env } from "./env.js";
 const client = new Client();
 

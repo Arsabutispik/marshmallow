@@ -1,5 +1,5 @@
 {
-  "name": "@marshmallow-stoat/bot",
+  "name": "@stoatx/bot",
   "version": "0.0.4",
   "description": "",
   "type": "module",
@@ -15,7 +15,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.28.0",
   "dependencies": {
-    "@marshmallow-stoat/mally": "workspace:*",
+    "stoatx": "workspace:*",
     "stoat.js": "^7.3.6",
     "zod": "^4.3.6"
   },

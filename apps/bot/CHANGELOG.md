@@ -1,29 +1,29 @@
-# @marshmallow/bot
+# @stoatx/bot
 
 ## 0.0.4
 
 ### Patch Changes
 
-- Updated dependencies [[`c3b6fe4`](https://github.com/Arsabutispik/marshmallow/commit/c3b6fe4495f34afe5fb50566de127dd5eedcd340), [`3ebc14f`](https://github.com/Arsabutispik/marshmallow/commit/3ebc14fdf063745326aeb285afdbf7e70b0232c8)]:
-  - @marshmallow-stoat/mally@0.2.0
+- Updated dependencies [[`c3b6fe4`](https://github.com/ispik/stoatx/commit/c3b6fe4495f34afe5fb50566de127dd5eedcd340), [`3ebc14f`](https://github.com/ispik/stoatx/commit/3ebc14fdf063745326aeb285afdbf7e70b0232c8)]:
+  - stoatx@0.2.0
 
 ## 0.0.3
 
 ### Patch Changes
 
-- Updated dependencies [[`5cf626c`](https://github.com/Arsabutispik/marshmallow/commit/5cf626c4159580d43469458aa12efc1db79b9b19)]:
-  - @marshmallow-stoat/mally@0.1.2
+- Updated dependencies [[`5cf626c`](https://github.com/ispik/stoatx/commit/5cf626c4159580d43469458aa12efc1db79b9b19)]:
+  - stoatx@0.1.2
 
 ## 0.0.2
 
 ### Patch Changes
 
-- Updated dependencies [[`98ee537`](https://github.com/Arsabutispik/marshmallow/commit/98ee537645ea10db4370f00ca18a31af8aee6842)]:
-  - @marshmallow-stoat/mally@0.1.1
+- Updated dependencies [[`98ee537`](https://github.com/ispik/stoatx/commit/98ee537645ea10db4370f00ca18a31af8aee6842)]:
+  - stoatx@0.1.1
 
 ## 0.0.1
 
 ### Patch Changes
 
-- Updated dependencies [[`f8a9da8`](https://github.com/Arsabutispik/marshmallow/commit/f8a9da821b5e5873ed7ab1a86740366a9832e5f7)]:
-  - @marshmallow/mally@0.1.0
+- Updated dependencies [[`f8a9da8`](https://github.com/ispik/stoatx/commit/f8a9da821b5e5873ed7ab1a86740366a9832e5f7)]:
+  - stoatx@0.1.0

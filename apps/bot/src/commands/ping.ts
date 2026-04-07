@@ -1,4 +1,4 @@
-import { Context, SimpleCommand, Stoat } from "@marshmallow-stoat/mally";
+import { Context, SimpleCommand, Stoat } from "stoatx";
 
 @Stoat()
 export class GeneralCommands {

@@ -10,7 +10,7 @@ import { Client, Message } from "stoat.js";
  *
  * @example
  * ```ts
- * import { MallyHandler } from '@marshmallow/mally';
+ * import { MallyHandler } from 'stoatx';
  * import { Client } from 'stoat.js';
  *
  * const client = new Client();
