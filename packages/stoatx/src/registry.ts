@@ -2,7 +2,7 @@ import * as path from "node:path";
 import * as fs from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { glob } from "tinyglobby";
-import { buildSimpleCommandMetadata, getSimpleCommands } from "./decorators";
+import { buildSimpleCommandMetadata, getSimpleCommands, getEventsMetadata } from "./decorators";
 import { decoratorStore } from "./decorators/store";
 import type { CommandMetadata } from "./types";
 
@@ -24,6 +24,16 @@ export interface RegisteredCommand {
   methodName: string;
   /** The original class constructor (for guard validation) */
   classConstructor: Function;
+}
+
+/**
+ * Stored event entry from @On/@Once registration.
+ */
+export interface RegisteredEvent {
+  instance: object;
+  methodName: string;
+  event: string;
+  type: "on" | "once";
 }
 
 /**
@@ -49,6 +59,7 @@ export class CommandRegistry {
 
   private readonly commands: Map<string, RegisteredCommand> = new Map();
   private readonly aliases: Map<string, string> = new Map();
+  private readonly registeredEvents: RegisteredEvent[] = [];
   private readonly extensions: string[];
   private readonly processedStoatClasses: Set<Function> = new Set();
 
@@ -80,7 +91,7 @@ export class CommandRegistry {
       }
     }
 
-    console.log(`[Stoatx] Loaded ${this.commands.size} command(s)`);
+    console.log(`[Stoatx] Loaded ${this.commands.size} command(s) and ${this.registeredEvents.length} event(s)`);
   }
 
   /**
@@ -116,7 +127,7 @@ export class CommandRegistry {
     }
 
     console.log(
-      `[Stoatx] Auto-discovered ${candidateFiles} candidate file(s), loaded ${this.commands.size} command(s)`,
+      `[Stoatx] Loaded ${this.commands.size} command(s) and ${this.registeredEvents.length} event(s)`,
     );
   }
 
@@ -197,6 +208,13 @@ export class CommandRegistry {
   }
 
   /**
+   * Get all registered events
+   */
+  getEvents(): RegisteredEvent[] {
+    return this.registeredEvents;
+  }
+
+  /**
    * Get commands grouped by category
    */
   getByCategory(): Map<string, RegisteredCommand[]> {
@@ -218,6 +236,7 @@ export class CommandRegistry {
   clear(): void {
     this.commands.clear();
     this.aliases.clear();
+    this.registeredEvents.length = 0;
     this.processedStoatClasses.clear();
   }
 
@@ -294,11 +313,12 @@ export class CommandRegistry {
 
   private registerStoatClassCommands(stoatClass: Function, instance: object, filePath: string, baseDir: string): void {
     const simpleCommands = getSimpleCommands(stoatClass);
+    const events = getEventsMetadata(stoatClass);
     const category = this.getCategoryFromPath(filePath, baseDir);
 
-    if (simpleCommands.length === 0) {
+    if (simpleCommands.length === 0 && events.length === 0) {
       console.warn(
-        `[Stoatx] Class ${stoatClass.name} is decorated with @Stoat but has no @SimpleCommand methods. Skipping...`,
+        `[Stoatx] Class ${stoatClass.name} is decorated with @Stoat but has no @SimpleCommand, @On or @Once methods. Skipping...`,
       );
       this.processedStoatClasses.add(stoatClass);
       return;
@@ -313,6 +333,21 @@ export class CommandRegistry {
 
       const metadata = buildSimpleCommandMetadata(cmdDef.options, cmdDef.methodName, category);
       this.register(instance, metadata, stoatClass, cmdDef.methodName);
+    }
+
+    for (const eventDef of events) {
+      const method = (instance as any)[eventDef.methodName];
+      if (typeof method !== "function") {
+        console.warn(`[Stoatx] Method ${eventDef.methodName} not found on ${stoatClass.name}. Skipping...`);
+        continue;
+      }
+
+      this.registeredEvents.push({
+        instance,
+        methodName: eventDef.methodName,
+        event: eventDef.event,
+        type: eventDef.type,
+      });
     }
 
     this.processedStoatClasses.add(stoatClass);

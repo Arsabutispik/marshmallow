@@ -24,7 +24,12 @@ export {
 
   // Metadata keys
   METADATA_KEYS,
+
+  // Events
+  On,
+  Once,
+  getEventsMetadata,
 } from "./decorators/index";
 
 // Re-export types
-export type { SimpleCommandDefinition } from "./decorators/index";
+export type { SimpleCommandDefinition, EventDefinition } from "./decorators/index";

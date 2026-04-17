@@ -71,10 +71,37 @@ export class StoatxHandler {
   async init(): Promise<void> {
     if (this.commandsDir) {
       await this.registry.loadFromDirectory(this.commandsDir);
-      return;
+    } else {
+      await this.registry.autoDiscover(this.discoveryOptions);
     }
 
-    await this.registry.autoDiscover(this.discoveryOptions);
+    this.attachEvents();
+  }
+
+  /**
+   * Attach registered events to the client
+   */
+  private attachEvents(): void {
+    const events = this.registry.getEvents();
+
+    for (const eventDef of events) {
+      const handler = async (...args: any[]) => {
+        try {
+          await (eventDef.instance as any)[eventDef.methodName](...args, this.client);
+        } catch (error) {
+          console.error(
+            `[Stoatx] Event Handler Error in @${eventDef.type === "on" ? "On" : "Once"}('${eventDef.event}'):`,
+            error,
+          );
+        }
+      };
+
+      if (eventDef.type === "once") {
+        this.client.once(eventDef.event, handler);
+      } else {
+        this.client.on(eventDef.event, handler);
+      }
+    }
   }
 
   /**
