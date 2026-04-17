@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
+    "composite": true,
     "target": "ES2020",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": ["ES2020"],
+    "types": ["node"],
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
@@ -15,7 +17,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "files": [],
+  "references": [{ "path": "./apps/bot" }, { "path": "./apps/docs" }, { "path": "./packages/stoatx" }]
 }
-

@@ -2,10 +2,7 @@ import * as path from "node:path";
 import * as fs from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { glob } from "tinyglobby";
-import {
-  buildSimpleCommandMetadata,
-  getSimpleCommands,
-} from "./decorators";
+import { buildSimpleCommandMetadata, getSimpleCommands } from "./decorators";
 import { decoratorStore } from "./decorators/store";
 import type { CommandMetadata } from "./types";
 
@@ -91,9 +88,7 @@ export class CommandRegistry {
    */
   async autoDiscover(options: AutoDiscoveryOptions = {}): Promise<void> {
     const roots = options.roots?.length ? options.roots : [process.cwd()];
-    const includePatterns = options.include?.length
-      ? options.include
-      : this.getDefaultAutoDiscoveryPatterns();
+    const includePatterns = options.include?.length ? options.include : this.getDefaultAutoDiscoveryPatterns();
 
     const patterns = roots.flatMap((root) =>
       includePatterns.map((pattern) => path.join(root, pattern).replace(/\\/g, "/")),
@@ -112,10 +107,11 @@ export class CommandRegistry {
       }
       candidateFiles++;
 
-      const baseDir = roots.find((root) => {
-        const relative = path.relative(root, file);
-        return relative && !relative.startsWith("..") && !path.isAbsolute(relative);
-      }) ?? roots[0];
+      const baseDir =
+        roots.find((root) => {
+          const relative = path.relative(root, file);
+          return relative && !relative.startsWith("..") && !path.isAbsolute(relative);
+        }) ?? roots[0];
       await this.loadFile(file, baseDir);
     }
 
@@ -145,12 +141,7 @@ export class CommandRegistry {
   /**
    * Register a command instance
    */
-  register(
-    instance: object,
-    metadata: CommandMetadata,
-    classConstructor: Function,
-    methodName: string,
-  ): void {
+  register(instance: object, metadata: CommandMetadata, classConstructor: Function, methodName: string): void {
     const name = metadata.name.toLowerCase();
 
     if (this.commands.has(name)) {
@@ -299,12 +290,7 @@ export class CommandRegistry {
     }
   }
 
-  private registerStoatClassCommands(
-    stoatClass: Function,
-    instance: object,
-    filePath: string,
-    baseDir: string,
-  ): void {
+  private registerStoatClassCommands(stoatClass: Function, instance: object, filePath: string, baseDir: string): void {
     const simpleCommands = getSimpleCommands(stoatClass);
     const category = this.getCategoryFromPath(filePath, baseDir);
 

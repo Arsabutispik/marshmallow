@@ -1,9 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
-  "changelog": [
-    "@changesets/changelog-github",
-    { "repo": "stoatx-ts/stoatx" }
-  ],
+  "changelog": ["@changesets/changelog-github", { "repo": "stoatx-ts/stoatx" }],
   "commit": false,
   "fixed": [],
   "linked": [],

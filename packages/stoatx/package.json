@@ -28,10 +28,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --watch --dts",
-    "lint": "eslint src/**/*.ts",
-    "format": "prettier --write src/**/*.ts"
+    "build": "tsup src/index.ts --format cjs,esm --dts --tsconfig tsconfig.build.json",
+    "dev": "tsup src/index.ts --format cjs,esm --watch --dts --tsconfig tsconfig.build.json",
+    "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
     "reflect-metadata": "^0.2.2",

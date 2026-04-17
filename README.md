@@ -9,5 +9,6 @@ A monorepo project containing a bot for the Stoat platform and its documentation
 - **packages** - Shared packages and utilities used across the monorepo
 
 # License
+
 Packages in this repository are licensed individually.
 Please check the LICENSE file in each package directory
