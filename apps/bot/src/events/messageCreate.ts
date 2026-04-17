@@ -5,8 +5,8 @@ import { Message } from "stoat.js";
 export class MessageCreate {
   @On("messageCreate")
   async onMessageCreate(message: Message) {
-    if(message.author?.bot) return;
-    if(message.content.toLowerCase() === "hello") {
+    if (message.author?.bot) return;
+    if (message.content.toLowerCase() === "hello") {
       await message.reply("Hello there!");
     }
   }

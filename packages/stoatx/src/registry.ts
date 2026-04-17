@@ -126,9 +126,7 @@ export class CommandRegistry {
       await this.loadFile(file, baseDir);
     }
 
-    console.log(
-      `[Stoatx] Loaded ${this.commands.size} command(s) and ${this.registeredEvents.length} event(s)`,
-    );
+    console.log(`[Stoatx] Loaded ${this.commands.size} command(s) and ${this.registeredEvents.length} event(s)`);
   }
 
   private getDefaultAutoDiscoveryPatterns(): string[] {
