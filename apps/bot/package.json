@@ -6,8 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node --env-file=.env dist/index.js",
-    "format": "prettier --write ."
+    "start": "node --env-file=.env dist/index.js"
   },
   "private": true,
   "keywords": [],

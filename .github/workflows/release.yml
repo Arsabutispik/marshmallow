@@ -34,9 +34,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -47,8 +47,8 @@ jobs:
         with:
           version: pnpm run version
           publish: pnpm run release
-          commit: 'chore: release packages'
-          title: 'chore(release): version packages'
+          commit: "chore: release packages"
+          title: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true

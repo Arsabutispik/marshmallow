@@ -15,7 +15,6 @@ export {
   SimpleCommand,
   getSimpleCommands,
 
-
   // Guard
   Guard,
   getGuards,

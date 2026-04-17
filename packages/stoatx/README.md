@@ -35,41 +35,41 @@ Make sure to enable decorators in your `tsconfig.json`:
 
 ```typescript
 // index.ts
-import 'reflect-metadata';
-import { Client } from 'stoat.js';
-import { MallyHandler } from 'stoatx';
+import "reflect-metadata";
+import { Client } from "stoat.js";
+import { MallyHandler } from "stoatx";
 
 const client = new Client();
 
 const handler = new MallyHandler({
-    client, 
-    prefix: '!', 
-    owners: ['your-user-id']
+  client,
+  prefix: "!",
+  owners: ["your-user-id"],
 });
 
 await handler.init();
 
-client.on('messageCreate', (message) => {
+client.on("messageCreate", (message) => {
   handler.handleMessage(message);
 });
 
-client.login('your-token');
+client.login("your-token");
 ```
 
 ### 2. Create commands
 
 ```typescript
 // commands/general.ts
-import { Stoat, SimpleCommand, Context } from 'stoatx';
+import { Stoat, SimpleCommand, Context } from "stoatx";
 
 @Stoat()
 export class GeneralCommands {
-  @SimpleCommand({ name: 'ping', description: 'Check bot latency' })
+  @SimpleCommand({ name: "ping", description: "Check bot latency" })
   async ping(ctx: Context) {
     await ctx.reply(`Pong! 🏓`);
   }
 
-  @SimpleCommand({ name: 'hello', aliases: ['hi', 'hey'] })
+  @SimpleCommand({ name: "hello", aliases: ["hi", "hey"] })
   async hello(ctx: Context) {
     await ctx.reply(`Hello, <@${ctx.authorId}>!`);
   }
@@ -115,25 +115,25 @@ async ban(ctx: Context) {
 Adds a guard check before command execution.
 
 ```typescript
-import { Stoat, SimpleCommand, Guard, MallyGuard, Context } from 'stoatx';
+import { Stoat, SimpleCommand, Guard, MallyGuard, Context } from "stoatx";
 
 // Define a guard
 class IsAdmin implements MallyGuard {
   run(ctx: Context): boolean {
-    return ctx.message.member?.hasPermission('Administrator') ?? false;
+    return ctx.message.member?.hasPermission("Administrator") ?? false;
   }
 
   guardFail(ctx: Context): void {
-    ctx.reply('You need Administrator permission!');
+    ctx.reply("You need Administrator permission!");
   }
 }
 
 @Stoat()
 @Guard(IsAdmin)
 export class AdminCommands {
-  @SimpleCommand({ name: 'shutdown' })
+  @SimpleCommand({ name: "shutdown" })
   async shutdown(ctx: Context) {
-    await ctx.reply('Shutting down...');
+    await ctx.reply("Shutting down...");
   }
 }
 ```
@@ -144,16 +144,16 @@ The `Context` object provides:
 
 ```typescript
 interface Context {
-  client: Client;          // Stoat client instance
-  message: Message;        // Original message
-  content: string;         // Raw message content
-  authorId: string;        // Author's user ID
-  channelId: string;       // Channel ID
-  serverId?: string;       // Server/Guild ID
-  args: string[];          // Parsed arguments
-  prefix: string;          // Prefix used
-  commandName: string;     // Command name used
-  
+  client: Client; // Stoat client instance
+  message: Message; // Original message
+  content: string; // Raw message content
+  authorId: string; // Author's user ID
+  channelId: string; // Channel ID
+  serverId?: string; // Server/Guild ID
+  args: string[]; // Parsed arguments
+  prefix: string; // Prefix used
+  commandName: string; // Command name used
+
   reply(content: string): Promise<void>;
 }
 ```
@@ -163,15 +163,15 @@ interface Context {
 ```typescript
 interface MallyHandlerOptions {
   client: Client;
-  commandsDir?: string;          // Legacy mode: explicitly scan this directory
+  commandsDir?: string; // Legacy mode: explicitly scan this directory
   discovery?: {
-    roots?: string[];            // Default: [process.cwd()]
-    include?: string[];          // Glob patterns per root
-    ignore?: string[];           // Additional ignore globs
+    roots?: string[]; // Default: [process.cwd()]
+    include?: string[]; // Glob patterns per root
+    ignore?: string[]; // Additional ignore globs
   };
   prefix: string | ((ctx: { serverId?: string }) => string | Promise<string>);
-  owners?: string[];             // Owner user IDs
-  extensions?: string[];         // File extensions (default: ['.js', '.mjs', '.cjs'])
+  owners?: string[]; // Owner user IDs
+  extensions?: string[]; // File extensions (default: ['.js', '.mjs', '.cjs'])
   disableMentionPrefix?: boolean; // Disable @bot prefix
 }
 
@@ -186,27 +186,27 @@ const handler = new MallyHandler({
   client,
   prefix: async ({ serverId }) => {
     // Fetch from database, etc.
-    return serverId ? await getServerPrefix(serverId) : '!';
+    return serverId ? await getServerPrefix(serverId) : "!";
   },
 });
 
 // Optional: constrain auto-discovery to specific roots/patterns
 const scopedHandler = new MallyHandler({
   client,
-  prefix: '!',
+  prefix: "!",
   discovery: {
     roots: [process.cwd()],
-    include: ['apps/bot/dist/commands/**/*.js'],
+    include: ["apps/bot/dist/commands/**/*.js"],
   },
 });
 
 // TypeScript source discovery is opt-in and requires a TS runtime loader (tsx/ts-node)
 const tsRuntimeHandler = new MallyHandler({
   client,
-  prefix: '!',
-  extensions: ['.ts'],
+  prefix: "!",
+  extensions: [".ts"],
   discovery: {
-    include: ['apps/bot/src/commands/**/*.ts'],
+    include: ["apps/bot/src/commands/**/*.ts"],
   },
 });
 ```
@@ -216,6 +216,3 @@ All commands are defined through `@Stoat()` classes and `@SimpleCommand()` metho
 ## License
 
 AGPL-3.0-or-later
-
-
-
