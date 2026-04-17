@@ -19,7 +19,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     environment: npm
-    if: github.repository == 'Arsabutispik/stoatx'
+    if: github.repository == 'stoatx-ts/stoatx'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
