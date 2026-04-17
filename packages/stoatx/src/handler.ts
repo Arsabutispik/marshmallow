@@ -44,25 +44,7 @@ export class Client extends StoatClient {
  *
  * Handles message parsing, middleware execution, and command dispatching
  *
- * @example
- * ```ts
- * import { StoatxHandler } from 'stoatx';
- * import { Client } from 'stoat.js';
- *
- * const client = new Client();
- *
- * const handler = new StoatxHandler({
- *   client,
- *   prefix: '!',
- *   owners: ['owner-user-id'],
- * });
- *
- * await handler.init();
- *
- * client.on('message', (message) => {
- *   handler.handleMessage(message);
- * });
- * ```
+ * @internal This class is not intended to be instantiated directly. Use the `Client` from `stoatx` instead.
  */
 export class StoatxHandler {
   private readonly commandsDir: string | undefined;

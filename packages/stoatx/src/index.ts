@@ -8,4 +8,5 @@ export * from "./decorators";
 export * from "./registry";
 
 // Handler
-export * from "./handler";
+export { Client } from "./handler";
+export type { StoatxHandler } from "./handler";
