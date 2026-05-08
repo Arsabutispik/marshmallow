@@ -4,6 +4,7 @@ import { Client } from "stoatx";
 const client = new Client({
   prefix: "!",
   owners: [env.OWNER_ID],
+  extensions: [".ts"]
 });
 
 client.on("ready", async () => {

@@ -114,7 +114,7 @@ export class StoatxHandler {
       authorId: string;
       channelId: string;
       serverId?: string;
-      reply: (content: string) => Promise<void>;
+      reply: (content: string) => Promise<Message>;
     },
   ): Promise<CommandContext | null> {
     const prefix = await this.resolvePrefix(meta.serverId);
@@ -192,7 +192,7 @@ export class StoatxHandler {
     const channelId = message.channel.id;
     const serverId = message.server?.id;
     const reply = async (content: string) => {
-      await message.channel!.sendMessage(content);
+      return await message.channel!.sendMessage(content);
     };
 
     return this.handleMessage(rawContent, message, {
@@ -226,7 +226,7 @@ export class StoatxHandler {
       authorId: string;
       channelId: string;
       serverId?: string;
-      reply: (content: string) => Promise<void>;
+      reply: (content: string) => Promise<Message>;
     },
   ): Promise<boolean> {
     const ctx = await this.parseMessage(rawContent, message, meta);

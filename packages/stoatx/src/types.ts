@@ -71,7 +71,7 @@ export interface CommandContext {
   /** The command name used (could be an alias) */
   commandName: string;
   /** Reply to the message */
-  reply: (content: string) => Promise<void>;
+  reply: (content: string) => Promise<Message>;
   /** The original message object (platform-specific) */
   message: Message;
 }
