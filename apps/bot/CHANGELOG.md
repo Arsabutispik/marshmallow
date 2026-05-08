@@ -1,5 +1,12 @@
 # @stoatx/bot
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`a2f3d46`](https://github.com/stoatx-ts/stoatx/commit/a2f3d46ffb8c7e7c455a189e940aea7774a8f5b5)]:
+  - stoatx@0.4.0
+
 ## 0.1.0
 
 ### Minor Changes

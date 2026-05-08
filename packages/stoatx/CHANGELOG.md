@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+### Minor Changes
+
+- [#16](https://github.com/stoatx-ts/stoatx/pull/16) [`a2f3d46`](https://github.com/stoatx-ts/stoatx/commit/a2f3d46ffb8c7e7c455a189e940aea7774a8f5b5) Thanks [@Arsabutispik](https://github.com/Arsabutispik)! - Make reply context return the message
+
 ## 0.3.0
 
 ### Minor Changes
