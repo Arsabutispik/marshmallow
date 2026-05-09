@@ -1,54 +1,30 @@
-name: Release
-
+name: Release Please
 on:
   push:
-    branches:
-      - main
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
-  id-token: write
+
+concurrency:
+  group: release-please
+  cancel-in-progress: true
 
 jobs:
-  release:
-    name: Release
+  release-please:
+    name: Release Please
     runs-on: ubuntu-latest
-    environment: npm
-    if: github.repository == 'stoatx-ts/stoatx'
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
+      - id: app-token
+        uses: actions/create-github-app-token@v2
         with:
-          fetch-depth: 0
+          app-id: ${{ secrets.GH_STOATX_RELEASE_APP_ID }}
+          private-key: ${{ secrets.STOATX_RELEASE_APP_PRIVATE_KEY }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+      - id: rp
+        uses: googleapis/release-please-action@v4
         with:
-          version: 10.28.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: "pnpm"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: pnpm run version
-          publish: pnpm run release
-          commit: "chore: release packages"
-          title: "chore(release): version packages"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+          token: ${{ steps.app-token.outputs.token }}
+          config-file: release-please-config.json
