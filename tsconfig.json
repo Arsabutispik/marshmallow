@@ -18,5 +18,10 @@
     "sourceMap": true
   },
   "files": [],
-  "references": [{ "path": "./apps/bot" }, { "path": "./apps/docs" }, { "path": "./packages/stoatx" }]
+  "references": [
+    { "path": "./apps/bot" },
+    { "path": "./apps/docs" },
+    { "path": "./packages/stoatx" },
+    { "path": "./packages/client" }
+  ]
 }
