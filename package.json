@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm -r build && changeset publish",
     "format": "prettier --write .",
@@ -25,8 +24,6 @@
   "license": "AGPL-3.0-or-later",
   "packageManager": "pnpm@10.28.0",
   "devDependencies": {
-    "@changesets/changelog-github": "^0.5.0",
-    "@changesets/cli": "^2.29.8",
     "@types/node": "^25.6.0",
     "prettier": "^3.8.1",
     "typescript": "^6.0.3"
