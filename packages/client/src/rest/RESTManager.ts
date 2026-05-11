@@ -134,7 +134,7 @@ export class RESTManager {
       throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json() as {"id": string};
+    const data = (await response.json()) as { id: string };
 
     return data.id;
   }

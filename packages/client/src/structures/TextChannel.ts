@@ -5,7 +5,7 @@ import { Attachment } from "./Attachment";
 export class TextChannel extends BaseChannel {
   public name!: string;
   public serverId!: string;
-  public defaultPermissions?: {a: number, d: number};
+  public defaultPermissions?: { a: number; d: number };
   public description?: string | null;
   public icon?: Attachment | null;
   public lastMessageId?: string | null;

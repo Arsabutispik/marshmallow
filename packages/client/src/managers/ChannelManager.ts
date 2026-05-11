@@ -24,7 +24,7 @@ export class ChannelManager {
     if (this.cache.has(id)) return this.cache.get(id)!;
 
     const data = await this.client.rest.get(`/channels/${id}`);
-    
+
     return this._add(data);
   }
 

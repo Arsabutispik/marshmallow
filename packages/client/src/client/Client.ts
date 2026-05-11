@@ -11,12 +11,11 @@ import { User } from "../structures/User";
 import { Member } from "../structures/Member";
 import { SweeperManager, SweeperOptions } from "../managers/SweepManager";
 
-
 export interface ClientEvents {
   ready: [data: any];
   messageCreate: [message: Message];
   messageUpdate: [oldMessage: null | Message, newMessage: Message];
-  messageDelete: [message: Message | { id: string, channelId: string }];
+  messageDelete: [message: Message | { id: string; channelId: string }];
   error: [error: Error];
   debug: [message: string];
   raw: [data: any];

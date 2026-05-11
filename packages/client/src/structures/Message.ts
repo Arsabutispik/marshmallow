@@ -24,8 +24,8 @@ export interface Masquerade {
 }
 export interface ReplyIntent {
   id: string;
-  mention: boolean,
-  fail_if_not_exists?: boolean,
+  mention: boolean;
+  fail_if_not_exists?: boolean;
 }
 
 export interface Interaction {

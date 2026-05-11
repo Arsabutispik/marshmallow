@@ -36,7 +36,7 @@ export class User extends Base {
   public username!: string;
   public avatar?: Attachment | null;
   public badges?: number;
-  public bot!: false| BotInformation;
+  public bot!: false | BotInformation;
   public displayName?: string | null;
   public flags?: number;
   public privileged?: boolean;
@@ -57,7 +57,6 @@ export class User extends Base {
     if (data.relationship !== undefined) this.relationship = data.relationship;
 
     if (data.display_name !== undefined) this.displayName = data.display_name;
-
 
     if (data.badges !== undefined) this.badges = data.badges;
     if (data.flags !== undefined) this.flags = data.flags;

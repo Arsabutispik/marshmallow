@@ -6,10 +6,10 @@ export * from "./gateway/GatewayManager";
 export * from "./managers/ChannelManager";
 export * from "./managers/MemberManager";
 export * from "./managers/MessageManager";
-export * from "./managers/RoleManager"
+export * from "./managers/RoleManager";
 export * from "./managers/ServerChannelManager";
 export * from "./managers/ServerManager";
-export * from "./managers/SweepManager"
+export * from "./managers/SweepManager";
 export * from "./managers/UserManager";
 
 // Structures

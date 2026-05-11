@@ -55,7 +55,7 @@ export class Server extends Base {
     if (data.description !== undefined) this.description = data.description;
     if (data.discoverable !== undefined) this.discoverable = data.discoverable;
     if (data.flags !== undefined) this.flags = data.flags;
-    if (data.nsfw !== undefined) this.nsfw = data.nsfw
+    if (data.nsfw !== undefined) this.nsfw = data.nsfw;
     if (data.icon !== undefined) {
       this.icon = data.icon ? new Attachment(this.client, data.icon) : null;
     }

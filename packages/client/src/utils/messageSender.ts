@@ -1,11 +1,7 @@
 import { Message, MessageOptions } from "../structures/Message";
 import { Client } from "../client/Client";
 
-export async function sendMessage(
-  client: Client,
-  channelId: string,
-  data: string | MessageOptions,
-): Promise<Message> {
+export async function sendMessage(client: Client, channelId: string, data: string | MessageOptions): Promise<Message> {
   const payload = typeof data === "string" ? { content: data } : data;
 
   if (!payload.content && (!payload.embeds || payload.embeds.length === 0)) {
