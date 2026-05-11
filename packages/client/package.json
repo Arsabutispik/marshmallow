@@ -1,27 +1,23 @@
 {
   "name": "@stoatx/client",
-  "version": "0.1.0",
-  "description": "Bot-oriented Revolt client",
-  "type": "module",
+  "version": "0.0.1",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "events": "^3.3.0",
+    "undici": "^6.0.0",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.10",
     "typescript": "^5.0.0"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

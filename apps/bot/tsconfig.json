@@ -4,13 +4,21 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+
+    /* OVERRIDES */
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"],
   "references": [
     {
-      "path": "../../packages/stoatx"
+      "path": "../../packages/client"
     }
   ]
 }
