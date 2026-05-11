@@ -8,11 +8,21 @@ export class GatewayManager {
   private pingInterval: NodeJS.Timeout | null = null;
   private token: string | null = null;
 
+  private reconnectAttempts: number = 0;
+  private readonly maxReconnectWait: number = 60000; // Cap at 60s
+  private isIntentionalClose: boolean = false;
+
   constructor(private client: Client) {}
 
   public async connect(token: string): Promise<void> {
     this.token = token;
+    this.isIntentionalClose = false;
     this.client.emit("debug", "Connecting to Stoat Gateway...");
+
+    if (this.ws) {
+      this.ws.removeAllListeners();
+      this.ws = null;
+    }
 
     const baseUrl = "wss://stoat.chat/events";
     const url = `${baseUrl}?version=1&format=json&token=${this.token}`;
@@ -21,14 +31,18 @@ export class GatewayManager {
 
     this.ws.on("open", () => {
       this.client.emit("debug", "WebSocket Opened. Starting ping loop...");
+      this.reconnectAttempts = 0;
       this.startPingLoop();
     });
 
     this.ws.on("message", (data) => this.handleMessage(data));
 
-    this.ws.on("close", (code , reason) => {
+    this.ws.on("close", (code, reason) => {
       this.client.emit("debug", `WebSocket closed: ${code} - ${reason.toString()}`);
-      this.reconnect();
+      if (this.pingInterval) clearInterval(this.pingInterval);
+      if (!this.isIntentionalClose) {
+        this.reconnect();
+      }
     });
 
     this.ws.on("error", (error) => {
@@ -135,7 +149,7 @@ export class GatewayManager {
         if (message) {
           this.client.emit("messageDelete", message);
         } else {
-          this.client.emit("messageDelete", {id: payload.id, channelId: payload.channel});
+          this.client.emit("messageDelete", { id: payload.id, channelId: payload.channel });
         }
 
         break;
@@ -264,16 +278,35 @@ export class GatewayManager {
   }
 
   private reconnect() {
-    this.client.emit("debug", "Attempting to reconnect in 5 seconds...");
-
     if (!this.token) {
       return this.client.emit("error", new Error("RECONNECT_FAILED: No token available."));
     }
 
-    if (this.pingInterval) clearInterval(this.pingInterval);
+    let waitTime = Math.pow(2, this.reconnectAttempts) * 1000;
+
+    const jitter = waitTime * 0.2 * Math.random();
+    waitTime = Math.min(waitTime + jitter, this.maxReconnectWait);
+
+    this.reconnectAttempts++;
+
+    this.client.emit(
+      "debug",
+      `Attempting to reconnect in ${Math.round(waitTime / 1000)}s... (Attempt ${this.reconnectAttempts})`,
+    );
 
     setTimeout(() => {
       void this.connect(this.token!);
-    }, 5000);
+    }, waitTime);
+  }
+
+  public disconnect() {
+    this.isIntentionalClose = true;
+    if (this.pingInterval) clearInterval(this.pingInterval);
+    if (this.ws) {
+      this.ws.close(1000, "Client disconnected gracefully");
+      this.ws.removeAllListeners();
+      this.ws = null;
+    }
+    this.client.emit("debug", "Gateway disconnected intentionally.");
   }
 }
