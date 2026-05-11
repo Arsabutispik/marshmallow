@@ -9,6 +9,7 @@ import { Server } from "../structures/Server";
 import { UserManager } from "../managers/UserManager";
 import { User } from "../structures/User";
 import { Member } from "../structures/Member";
+import { SweeperManager, SweeperOptions } from "../managers/SweepManager";
 
 
 export interface ClientEvents {
@@ -30,20 +31,27 @@ export interface ClientEvents {
   serverMemberLeave: [member: Member];
 }
 
+export interface ClientOptions {
+  sweepers?: SweeperOptions;
+}
+
 export class Client extends EventEmitter {
   public rest: RESTManager;
   public gateway: GatewayManager;
   public channels: ChannelManager;
   public servers: ServerManager;
   public users: UserManager;
+  public sweepers: SweeperManager;
 
-  constructor() {
+  constructor(public options: ClientOptions = {}) {
     super({ captureRejections: true });
     this.rest = new RESTManager(this);
     this.gateway = new GatewayManager(this);
     this.channels = new ChannelManager(this);
     this.servers = new ServerManager(this);
     this.users = new UserManager(this);
+
+    this.sweepers = new SweeperManager(this, options.sweepers ?? {});
   }
 
   /**
@@ -51,7 +59,7 @@ export class Client extends EventEmitter {
    */
   public async login(token: string): Promise<any> {
     if (!token) throw new Error("A valid token must be provided.");
-
+    this.sweepers.start();
     this.rest.setToken(token);
     return this.gateway.connect(token);
   }

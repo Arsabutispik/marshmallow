@@ -5,7 +5,7 @@ import { Client } from "../client/Client";
  */
 export abstract class Base {
   public readonly id: string;
-
+  public cachedAt: number = Date.now();
   protected readonly client: Client;
 
   constructor(client: Client, data: { _id: string }) {
