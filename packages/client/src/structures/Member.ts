@@ -1,10 +1,9 @@
-// src/structures/Member.ts
 import { Base } from "./Base";
 import type { Client } from "../client/Client";
 import type { User } from "./User";
 import type { Server } from "./Server";
 import type { Role } from "./Role";
-import { Permissions, PermissionFlags } from "../utils/permissions";
+import { Permissions, PermissionFlags, PermissionResolvable } from "../utils/permissions";
 import * as util from "node:util";
 
 export class Member extends Base {
@@ -18,7 +17,7 @@ export class Member extends Base {
   public canRecieve: boolean = false;
 
   constructor(client: Client, data: any) {
-    super(client, { _id: data.user._id});
+    super(client, { _id: data.user._id });
 
     this.serverId = data.serverId || data.server_id;
     this.joinedAt = new Date(data.joinedAt || data.joined_at);
@@ -72,11 +71,11 @@ export class Member extends Base {
   }
 
   /** Checks if the member has a specific permission */
-  public hasPermission(permission: bigint): boolean {
+  public hasPermission(permission: PermissionResolvable): boolean {
     return Permissions.has(this.permissions, permission);
   }
 
-  [util.inspect.custom](depth: number, options: util.InspectOptions, inspect: typeof util.inspect) {
+  [util.inspect.custom](options: util.InspectOptions, inspect: typeof util.inspect) {
     const { client, serverId, ...props } = this;
 
     return `${this.constructor.name} ${inspect(

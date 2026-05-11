@@ -46,18 +46,32 @@ export const PermissionFlags = {
   GrantAllSafe: 0x000fffffffffffffn,
 } as const;
 
+export type PermissionString = keyof typeof PermissionFlags;
+export type PermissionResolvable = bigint | PermissionString | PermissionResolvable[];
+
 export class Permissions {
   /**
-   * Checks if a specific permission bit exists within a total permission BigInt
+   * Converts a string, BigInt, or array of strings into a single BigInt
    */
-  public static has(totalPermissions: bigint, permissionToCheck: bigint): boolean {
-    return (totalPermissions & permissionToCheck) === permissionToCheck;
+  public static resolve(permission: PermissionResolvable): bigint {
+    if (typeof permission === "bigint") return permission;
+
+    if (typeof permission === "string") {
+      return PermissionFlags[permission] ?? 0n;
+    }
+
+    if (Array.isArray(permission)) {
+      return permission.reduce<bigint>((acc, p) => acc | this.resolve(p), 0n);
+    }
+
+    return 0n;
   }
 
   /**
-   * Helper to combine multiple permissions into one
+   * Checks if a specific permission bit exists
    */
-  public static combine(...permissions: bigint[]): bigint {
-    return permissions.reduce((acc, perm) => acc | perm, 0n);
+  public static has(totalPermissions: bigint, permissionToCheck: PermissionResolvable): boolean {
+    const resolvedCheck = this.resolve(permissionToCheck);
+    return (totalPermissions & resolvedCheck) === resolvedCheck;
   }
 }
