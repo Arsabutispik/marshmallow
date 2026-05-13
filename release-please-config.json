@@ -4,6 +4,14 @@
     "packages/stoatx": {
       "release-type": "node",
       "package-name": "stoatx"
+    },
+    "packages/client": {
+      "release-type": "node",
+      "package-name": "@stoatx/client"
+    },
+    "apps/bot": {
+      "release-type": "node",
+      "package-name": "@stoatx/bot"
     }
   }
 }
