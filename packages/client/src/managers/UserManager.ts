@@ -1,4 +1,3 @@
-import { Collection } from "../utils/Collection";
 import { User, UserProfile, UserStatus } from "../structures/User";
 import type { Client } from "../client/Client";
 import { BaseManager } from "./BaseManager";

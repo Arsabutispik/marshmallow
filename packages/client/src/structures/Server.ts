@@ -3,7 +3,7 @@ import type { Client } from "../client/Client";
 import { FetchMembersOptions, MemberManager } from "../managers/MemberManager";
 import { ServerChannelManager } from "../managers/ServerChannelManager";
 import { Attachment } from "./Attachment";
-import { RoleManager, RoleResolvable } from "../managers/RoleManager";
+import { RoleManager } from "../managers/RoleManager";
 import { ServerInviteManager } from "../managers/ServerInviteManager";
 import { ServerBanManager } from "../managers/ServerBanManager";
 import { ServerEditOptions } from "../managers/ServerManager";

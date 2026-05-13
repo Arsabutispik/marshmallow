@@ -11,7 +11,6 @@ import { User } from "../structures/User";
 import { ClientUser } from "../structures/ClientUser";
 import { Member } from "../structures/Member";
 import { SweeperManager, SweeperOptions } from "../managers/SweepManager";
-import { Key } from "node:readline";
 
 export interface ClientEvents {
   ready: [data: any];

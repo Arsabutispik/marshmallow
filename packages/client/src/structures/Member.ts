@@ -110,10 +110,9 @@ export class Member extends Base {
     await server.members.ban(this.id, options);
   }
 
-  public async unban(serverId?: string) {
-    if (!serverId) serverId = this.serverId;
-    let server = this.client.servers.cache.get(this.serverId!);
-    if (!server) server = await this.client.servers.fetch(this.serverId!);
+  public async unban() {
+    let server = this.client.servers.cache.get(this.serverId);
+    if (!server) server = await this.client.servers.fetch(this.serverId);
     await server.members.unban(this.id);
   }
 

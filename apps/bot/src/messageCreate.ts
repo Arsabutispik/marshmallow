@@ -1,4 +1,4 @@
-import { Client, Message, On, Stoat } from "stoatx";
+import { Message, On, Stoat } from "stoatx";
 
 @Stoat()
 export class MessageCreateListener {

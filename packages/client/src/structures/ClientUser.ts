@@ -9,4 +9,3 @@ export class ClientUser extends User {
     super(client, data);
   }
 }
-

@@ -7,7 +7,6 @@ export class PingCommand {
     aliases: ["p"],
   })
   async ping(ctx: CommandContext) {
-    const before = Date.now();
     const reply = await ctx.message.reply("Calculating Ping...");
     const latency = reply.createdAt!.getTime() - ctx.message.createdAt!.getTime();
     await reply.edit(`Pong! Latency: ${latency}ms`);

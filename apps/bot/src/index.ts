@@ -1,9 +1,8 @@
 import { env } from "./env.js";
-import { Client, EmbedBuilder } from "stoatx";
-import * as fs from "fs";
+import { Client } from "stoatx";
 
 const client = new Client({
-  prefix: "!"
+  prefix: "!",
 });
 async function main() {
   await client.initCommands();

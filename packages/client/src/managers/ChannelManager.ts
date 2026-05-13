@@ -1,12 +1,10 @@
 import { BaseChannel } from "../structures/BaseChannel";
 import { createChannel } from "../utils/ChannelFactory";
 import type { Client } from "../client/Client";
-import { Collection } from "../utils/Collection";
 import { TextChannel } from "../structures/TextChannel";
 import { DMChannel } from "../structures/DMChannel";
 import { GroupChannel } from "../structures/GroupChannel";
 import { Permissions, type PermissionResolvable } from "../utils/permissions";
-import { Message, MessageOptions, ReplyIntent } from "../structures/Message";
 import { BaseManager } from "./BaseManager";
 
 export type ChannelResolvable = BaseChannel | string;

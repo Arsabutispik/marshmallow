@@ -1,7 +1,7 @@
 import { BaseChannel } from "./BaseChannel";
 import { Client } from "../client/Client";
 import { Attachment } from "./Attachment";
-import { PermissionResolvable, Permissions } from "../utils/permissions";
+import { PermissionResolvable } from "../utils/permissions";
 import { ChannelRolePermissionOptions } from "../managers/ChannelManager";
 
 export class TextChannel extends BaseChannel {

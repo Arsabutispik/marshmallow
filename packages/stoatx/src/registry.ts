@@ -137,11 +137,7 @@ export class CommandRegistry {
   private async isLikelyCommandModule(filePath: string): Promise<boolean> {
     try {
       const source = await fs.readFile(filePath, "utf8");
-      return (
-        source.includes("Stoat") ||
-        source.includes("SimpleCommand") ||
-        source.includes("stoatx:command")
-      );
+      return source.includes("Stoat") || source.includes("SimpleCommand") || source.includes("stoatx:command");
     } catch {
       // If the file can't be pre-read, fall back to attempting import.
       return true;
