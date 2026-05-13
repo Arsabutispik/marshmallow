@@ -3,19 +3,17 @@ import { Client } from "stoatx";
 
 const client = new Client({
   prefix: "!",
-  owners: [env.OWNER_ID],
-  extensions: [".ts"],
 });
-
-client.on("ready", async () => {
-  if (client.user) {
-    console.info(`Logged in as ${client.user.username}!`);
-  }
-});
-
 async function main() {
   await client.initCommands();
-  await client.loginBot(env.BOT_TOKEN);
 }
 
+client.on("messageDelete", async (message) => {
+  console.log(message);
+});
+client.on("error", (err) => {
+  console.error(err);
+});
 void main();
+
+void client.login(env.BOT_TOKEN);

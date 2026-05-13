@@ -1,9 +1,0 @@
-import { CommandContext as Context, SimpleCommand, Stoat } from "stoatx";
-
-@Stoat()
-export class GeneralCommands {
-  @SimpleCommand({ name: "ping", description: "Replies with Pong!" })
-  async ping(ctx: Context) {
-    await ctx.reply(`Pong! Latency: ${Date.now() - ctx.message.createdAt.getTime()}ms`);
-  }
-}

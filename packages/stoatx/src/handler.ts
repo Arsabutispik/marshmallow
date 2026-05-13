@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { CommandRegistry, RegisteredCommand } from "./registry";
 import type { CommandContext, CommandMetadata, StoatxDiscoveryOptions, StoatxHandlerOptions } from "./types";
-import { Client as StoatClient, Message } from "stoat.js";
+import { Client as StoatClient, ClientEvents, Message } from "@stoatx/client";
 
 /**
  * Client - An extended Client that integrates StoatxHandler directly
@@ -96,10 +96,11 @@ export class StoatxHandler {
         }
       };
 
+      const eventName = eventDef.event as keyof ClientEvents;
       if (eventDef.type === "once") {
-        this.client.once(eventDef.event, handler);
+        this.client.once(eventName, handler);
       } else {
-        this.client.on(eventDef.event, handler);
+        this.client.on(eventName, handler);
       }
     }
   }

@@ -7,6 +7,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 concurrency:
   group: release-please
@@ -16,6 +17,7 @@ jobs:
   release-please:
     name: Release Please
     runs-on: ubuntu-latest
+    environment: npm
     steps:
       - id: app-token
         uses: actions/create-github-app-token@v2
@@ -28,3 +30,37 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
           config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Checkout Repo
+        if: ${{ steps.rp.outputs.releases_created }}
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        if: ${{ steps.rp.outputs.releases_created }}
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.28.0
+
+      - name: Setup Node.js
+        if: ${{ steps.rp.outputs.releases_created }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        if: ${{ steps.rp.outputs.releases_created }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        if: ${{ steps.rp.outputs.releases_created }}
+        run: pnpm run build
+
+      - name: Publish to npm
+        if: ${{ steps.rp.outputs.releases_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+        run: pnpm publish -r --access public --no-git-checks
