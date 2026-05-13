@@ -31,6 +31,8 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+      - name: Check RP Outputs
+        run: echo "Releases created? ${{ steps.rp.outputs.releases_created }}"
 
       - name: Checkout Repo
         if: ${{ steps.rp.outputs.releases_created == 'true' }}
