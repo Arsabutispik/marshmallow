@@ -140,7 +140,6 @@ export class CommandRegistry {
       return (
         source.includes("Stoat") ||
         source.includes("SimpleCommand") ||
-        source.includes("Command") ||
         source.includes("stoatx:command")
       );
     } catch {

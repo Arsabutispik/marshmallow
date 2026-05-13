@@ -8,8 +8,10 @@ import { ServerManager } from "../managers/ServerManager";
 import { Server } from "../structures/Server";
 import { UserManager } from "../managers/UserManager";
 import { User } from "../structures/User";
+import { ClientUser } from "../structures/ClientUser";
 import { Member } from "../structures/Member";
 import { SweeperManager, SweeperOptions } from "../managers/SweepManager";
+import { Key } from "node:readline";
 
 export interface ClientEvents {
   ready: [data: any];
@@ -46,6 +48,7 @@ export class Client extends EventEmitter {
   public servers: ServerManager;
   public users: UserManager;
   public sweepers: SweeperManager;
+  public user: ClientUser | null = null;
 
   constructor(public options: ClientOptions = {}) {
     super({ captureRejections: true });
@@ -74,6 +77,10 @@ export class Client extends EventEmitter {
 
   public override on<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this {
     return super.on(event, listener as any);
+  }
+
+  public override once<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this {
+    return super.once(event, listener as any);
   }
 
   public override emit<K extends keyof ClientEvents>(event: K, ...args: ClientEvents[K]): boolean {

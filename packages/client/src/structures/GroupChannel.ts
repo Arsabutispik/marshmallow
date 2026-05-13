@@ -3,6 +3,7 @@ import { Attachment } from "./Attachment";
 import { BaseChannel } from "./BaseChannel";
 import type { User } from "./User";
 import * as util from "node:util";
+import { PermissionResolvable } from "../utils/permissions";
 
 export class GroupChannel extends BaseChannel {
   public name!: string;
@@ -57,6 +58,20 @@ export class GroupChannel extends BaseChannel {
     return this.recipients
       .map((id) => this.client.users.cache.get(id))
       .filter((user): user is User => user !== undefined);
+  }
+
+  /**
+   * Updates the default (everyone) permissions for this channel.
+   * @param permissions The default permissions to grant globally in this channel.
+   * @returns A promise that resolves to the updated BaseChannel.
+   * @throws {TypeError} If invalid permissions are provided.
+   * @throws {Error} If the API request fails.
+   * @example
+   * // Set the default permission to allow everyone to view the channel
+   * await channel.setDefaultPermissions(["ViewChannel", "ReadMessageHistory"]);
+   */
+  public async setDefaultPermissions(permissions: PermissionResolvable): Promise<this> {
+    return (await this.client.channels.setDefaultPermissions(this.id, permissions)) as this;
   }
 
   [util.inspect.custom](_depth: number, options: util.InspectOptions, inspect: typeof util.inspect) {

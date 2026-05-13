@@ -1,4 +1,4 @@
-import { Client as StoatClient, Message } from "stoat.js";
+import { Client as StoatClient, Message } from "@stoatx/client";
 
 /**
  * Permission types for commands

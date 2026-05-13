@@ -29,6 +29,11 @@ export interface UserStatus {
   text?: string | null;
 }
 
+export interface UserProfile {
+  background?: string | null;
+  content?: string | null;
+}
+
 export class User extends Base {
   public discriminator!: string;
   public online!: boolean;
@@ -86,5 +91,18 @@ export class User extends Base {
    */
   public get tag(): string {
     return `${this.username}#${this.discriminator}`;
+  }
+
+  /**
+   * Fetch a User to update their information
+   * @param force Skip the cache check and force an API request
+   * @returns The fetched User object
+   * @throws Error if the user cannot be found or fetched
+   * @example
+   * // Fetch a user
+   * await user.fetch();
+   */
+  public async fetch(force: boolean = false): Promise<this> {
+    return (await this.client.users.fetch(this.id, force)) as this;
   }
 }

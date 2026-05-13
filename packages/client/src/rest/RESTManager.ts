@@ -151,4 +151,8 @@ export class RESTManager {
   public delete(endpoint: string) {
     return this.makeRequest("DELETE", endpoint);
   }
+
+  async put(endpoint: string, body: any) {
+    return this.makeRequest("PUT", endpoint, body);
+  }
 }

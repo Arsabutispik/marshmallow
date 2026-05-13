@@ -2,6 +2,7 @@ import WebSocket from "ws";
 import { Client } from "../client/Client";
 import { Message } from "../structures/Message";
 import { TextChannel } from "../structures/TextChannel";
+import { ClientUser } from "../structures/ClientUser";
 
 export class GatewayManager {
   private ws: WebSocket | null = null;
@@ -79,6 +80,9 @@ export class GatewayManager {
         if (payload.users) {
           for (const rawUser of payload.users) {
             this.client.users._add(rawUser);
+            if (rawUser.relation === "User" && !this.client.user) {
+              this.client.user = new ClientUser(this.client, rawUser);
+            }
           }
         }
         this.client.emit("ready", payload);

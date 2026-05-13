@@ -1,26 +1,20 @@
 import { env } from "./env.js";
-import { Client, EmbedBuilder } from "@stoatx/client";
+import { Client, EmbedBuilder } from "stoatx";
 import * as fs from "fs";
 
-const client = new Client();
-
-client.on("ready", async () => {
-  console.log("Client ready");
+const client = new Client({
+  prefix: "!"
 });
-
-client.on("messageCreate", async (message) => {
-  if (message.content === "!ping") {
-    const embed = new EmbedBuilder().setTitle("Test").setColor("#FF0000").setDescription("This is a test embed");
-
-    const buffer = fs.readFileSync("./a.jpg");
-    const fileId = await client.rest.uploadFile("a.jpg", buffer);
-
-    await message.reply({ content: "pong", embeds: [embed], attachments: [fileId] });
-  }
-});
+async function main() {
+  await client.initCommands();
+}
 
 client.on("messageDelete", async (message) => {
   console.log(message);
 });
+client.on("error", (err) => {
+  console.error(err);
+});
+void main();
 
 void client.login(env.BOT_TOKEN);

@@ -1,9 +1,12 @@
 import { Base } from "./Base";
 import type { Client } from "../client/Client";
-import { MemberManager } from "../managers/MemberManager";
+import { FetchMembersOptions, MemberManager } from "../managers/MemberManager";
 import { ServerChannelManager } from "../managers/ServerChannelManager";
 import { Attachment } from "./Attachment";
-import { RoleManager } from "../managers/RoleManager";
+import { RoleManager, RoleResolvable } from "../managers/RoleManager";
+import { ServerInviteManager } from "../managers/ServerInviteManager";
+import { ServerBanManager } from "../managers/ServerBanManager";
+import { ServerEditOptions } from "../managers/ServerManager";
 
 export interface Categories {
   channels: string[];
@@ -27,12 +30,16 @@ export class Server extends Base {
   public members: MemberManager;
   public channels: ServerChannelManager;
   public roles: RoleManager;
+  public bans: ServerBanManager;
+  public invites: ServerInviteManager;
 
   constructor(client: Client, data: any) {
     super(client, data);
     this.channels = new ServerChannelManager(client, this);
     this.members = new MemberManager(client, this);
     this.roles = new RoleManager(client, this);
+    this.bans = new ServerBanManager(this.client, this);
+    this.invites = new ServerInviteManager(this.client, this);
     this._patch(data);
   }
 
@@ -83,9 +90,27 @@ export class Server extends Base {
   }
 
   /**
+   * Edits this server.
+   * @param options The fields to update.
+   */
+  public async edit(options: ServerEditOptions): Promise<this> {
+    await this.client.servers.edit(this.id, options);
+    return this;
+  }
+
+  /**
    * Leaves the server
    */
   public async leave() {
     return this.client.rest.delete(`/servers/${this.id}/leave`);
+  }
+
+  /**
+   * Fetches multiple members from this server.
+   * @param options Filter options for the fetch request.
+   * @returns A Collection of the fetched members.
+   */
+  public async fetchMembers(options?: FetchMembersOptions) {
+    return this.members.fetchMany(options);
   }
 }

@@ -1,6 +1,8 @@
 import { BaseChannel } from "./BaseChannel";
 import { Client } from "../client/Client";
 import { Attachment } from "./Attachment";
+import { PermissionResolvable, Permissions } from "../utils/permissions";
+import { ChannelRolePermissionOptions } from "../managers/ChannelManager";
 
 export class TextChannel extends BaseChannel {
   public name!: string;
@@ -39,5 +41,34 @@ export class TextChannel extends BaseChannel {
         }
       }
     }
+  }
+
+  /**
+   * Updates the permission overrides for the channel.
+   * @param roleId The raw string ID of the role to update.
+   * @param options The allow and deny permissions to set.
+   * @returns A promise that resolves to the updated BaseChannel.
+   * @throws {TypeError} If the channel is not a Server Channel, or options are invalid.
+   * @throws {Error} If the API request fails.
+   * @example
+   * // Deny a role the ability to send messages in this channel
+   * await channel.setRolePermissions("ROLE_ID", { deny: ["SendMessage"] });
+   */
+  public async setRolePermissions(roleId: string, options: ChannelRolePermissionOptions): Promise<this> {
+    return (await this.client.channels.setRolePermissions(this.id, roleId, options)) as this;
+  }
+
+  /**
+   * Updates the default (everyone) permissions for this channel.
+   * @param permissions The default permissions to grant globally in this channel.
+   * @returns A promise that resolves to the updated BaseChannel.
+   * @throws {TypeError} If invalid permissions are provided.
+   * @throws {Error} If the API request fails.
+   * @example
+   * // Set the default permission to allow everyone to view the channel
+   * await channel.setDefaultPermissions(["ViewChannel", "ReadMessageHistory"]);
+   */
+  public async setDefaultPermissions(permissions: PermissionResolvable): Promise<this> {
+    return (await this.client.channels.setDefaultPermissions(this.id, permissions)) as this;
   }
 }

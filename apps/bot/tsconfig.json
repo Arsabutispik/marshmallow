@@ -1,24 +1,24 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-
-    /* OVERRIDES */
     "composite": false,
     "declaration": false,
     "declarationMap": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "types": ["node"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"],
   "references": [
     {
       "path": "../../packages/client"
+    },
+    {
+      "path": "../../packages/stoatx"
     }
   ]
 }

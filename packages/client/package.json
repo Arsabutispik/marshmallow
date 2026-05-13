@@ -1,23 +1,49 @@
 {
   "name": "@stoatx/client",
   "version": "0.0.1",
-  "main": "./dist/index.js",
+  "type": "module",
+  "description": "A client library for the Stoatx command handler, providing utilities and integrations for building command-based applications within the Stoat ecosystem.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stoatx-ts/stoatx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stoatx-ts/stoatx/issues"
+  },
+  "homepage": "https://github.com/stoatx-ts/stoatx#readme",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "files": [
     "dist"
   ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc -w"
+    "build": "tsup src/index.ts --format cjs,esm --dts --external ws,undici --clean --tsconfig tsconfig.build.json",
+    "dev": "tsup src/index.ts --format cjs,esm --watch --dts --external ws,undici --tsconfig tsconfig.build.json",
+    "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
     "events": "^3.3.0",
     "undici": "^6.0.0",
-    "ws": "^8.16.0"
+    "ws": "^8.16.0",
+    "ulid": "^3.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@types/ws": "^8.5.10",
-    "typescript": "^5.0.0"
+    "tsup": "^8.0.0",
+    "@types/ws": "^8.5.0",
+    "typescript": "^5.0.0",
+    "prettier": "^3.8.1"
   }
 }

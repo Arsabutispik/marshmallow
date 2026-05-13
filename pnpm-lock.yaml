@@ -20,12 +20,12 @@ importers:
 
   apps/bot:
     dependencies:
-      '@stoatx/client':
-        specifier: workspace:*
-        version: link:../../packages/client
       stoat.js:
         specifier: ^7.3.6
         version: 7.3.6
+      stoatx:
+        specifier: workspace:*
+        version: link:../../packages/stoatx
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -50,31 +50,40 @@ importers:
       events:
         specifier: ^3.3.0
         version: 3.3.0
+      ulid:
+        specifier: ^3.0.2
+        version: 3.0.2
       undici:
         specifier: ^6.0.0
         version: 6.25.0
       ws:
         specifier: ^8.16.0
-        version: 8.20.0
+        version: 8.20.1
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.33
       '@types/ws':
-        specifier: ^8.5.10
+        specifier: ^8.5.0
         version: 8.18.1
+      prettier:
+        specifier: ^3.8.1
+        version: 3.8.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(tsx@4.21.0)(typescript@5.9.3)
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
 
   packages/stoatx:
     dependencies:
+      '@stoatx/client':
+        specifier: workspace:*
+        version: link:../client
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
-      stoat.js:
-        specifier: ^7.3.6
-        version: 7.3.6
       tinyglobby:
         specifier: ^0.2.10
         version: 0.2.15
@@ -681,6 +690,10 @@ packages:
     resolution: {integrity: sha512-fIRiVTJNcSRmXKPZtGzFQv9WRrZ3M9eoptl/teFJvjOzmpU+/K/JH6HZ8deBfb5vMEpicJcLn7JmvdknlMq7Zg==}
     hasBin: true
 
+  ulid@3.0.2:
+    resolution: {integrity: sha512-yu26mwteFYzBAot7KVMqFGCVpsF6g8wXfJzQUHvu1no3+rRRSFcSV2nKeYvNPLD2J4b08jYBDhHUjeH0ygIl9w==}
+    hasBin: true
+
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
@@ -691,8 +704,8 @@ packages:
     resolution: {integrity: sha512-ZgpWDC5gmNiuY9CnLVXEH8rl50xhRCuLNA97fAUnKi8RRuV4E6KG31pDTsLVUKnohJE0I3XDrTeEydAXRw47xg==}
     engines: {node: '>=18.17'}
 
-  ws@8.20.0:
-    resolution: {integrity: sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA==}
+  ws@8.20.1:
+    resolution: {integrity: sha512-It4dO0K5v//JtTXuPkfEOaI3uUN87iYPnqo/ZzqCoG3g8uhA66QUMs/SrM0YK7/NAu+r4LMh/9dq2A7k+rHs+w==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -1176,12 +1189,14 @@ snapshots:
 
   ulid@2.4.0: {}
 
+  ulid@3.0.2: {}
+
   undici-types@6.21.0: {}
 
   undici-types@7.19.2: {}
 
   undici@6.25.0: {}
 
-  ws@8.20.0: {}
+  ws@8.20.1: {}
 
   zod@4.3.6: {}

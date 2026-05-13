@@ -7,6 +7,7 @@ import * as util from "node:util";
 import { EmbedBuilder, TextEmbedData } from "../builders/EmbedBuilder";
 import { Attachment } from "./Attachment";
 import { Server } from "./Server";
+import { decodeTime } from "ulid";
 
 export interface MessageOptions {
   content?: string;
@@ -40,6 +41,7 @@ export class Message extends Base {
   public embeds: any[] = [];
   public attachments: Attachment[] = [];
   public editedAt: Date | null = null;
+  public createdAt: Date | null = null;
   public flags: number = 0;
   public interactions: Interaction | null = null;
   public masquerade: Masquerade | null = null;
@@ -55,6 +57,12 @@ export class Message extends Base {
     this.authorId = data.author;
     this.channelId = data.channel;
 
+    const timestamp = decodeTime(this.id);
+    if (timestamp) {
+      console.log(timestamp);
+      this.createdAt = new Date(timestamp);
+    }
+
     if (data.attachments) {
       this.attachments = data.attachments.map((fileData: any) => new Attachment(this.client, fileData));
     }
@@ -67,27 +75,16 @@ export class Message extends Base {
     this._patch(data);
   }
 
-  public async reply(content: string): Promise<Message>;
-
-  public async reply(options: MessageOptions): Promise<Message>;
-
   public async reply(contentOrOptions: string | MessageOptions): Promise<Message> {
-    let payload: MessageOptions = {};
+    let channel = this.channel;
+    if (!channel) channel = await this.client.channels.fetch(this.channelId);
 
-    if (typeof contentOrOptions === "string") {
-      payload.content = contentOrOptions;
-    } else {
-      payload = contentOrOptions;
-    }
+    const options: MessageOptions =
+      typeof contentOrOptions === "string" ? { content: contentOrOptions } : { ...contentOrOptions };
 
-    const resolvedEmbeds = payload.embeds?.map((embed) =>
-      typeof (embed as any).toJSON === "function" ? (embed as any).toJSON() : embed,
-    );
-
-    const repliesArray: ReplyIntent[] = payload.replies ? [...payload.replies] : [];
+    const repliesArray: ReplyIntent[] = options.replies ? [...options.replies] : [];
 
     const alreadyReplying = repliesArray.some((reply) => reply.id === this.id);
-
     if (!alreadyReplying) {
       repliesArray.push({
         id: this.id,
@@ -95,49 +92,50 @@ export class Message extends Base {
       });
     }
 
-    const data = await this.client.rest.post(`/channels/${this.channelId}/messages`, {
-      ...payload,
-      embeds: resolvedEmbeds,
-      replies: repliesArray,
-    });
+    options.replies = repliesArray;
 
-    return new Message(this.client, data);
+    return channel.messages.send(options);
   }
 
-  public async edit(contentOrOptions: string | MessageOptions): Promise<Message> {
-    let payload: MessageOptions = {};
+  /**
+   * Edits this message.
+   * @param contentOrOptions The new content or options for the message.
+   */
+  public async edit(contentOrOptions: string | MessageOptions): Promise<this> {
+    let channel = this.channel;
+    if (!channel) channel = await this.client.channels.fetch(this.channelId);
 
-    if (typeof contentOrOptions === "string") {
-      payload.content = contentOrOptions;
-    } else {
-      payload = { ...contentOrOptions };
-    }
-
-    const resolvedEmbeds = payload.embeds?.map((embed) =>
-      typeof (embed as any).toJSON === "function" ? (embed as any).toJSON() : embed,
-    );
-
-    const data = await this.client.rest.patch(`/channels/${this.channelId}/messages/${this.id}`, {
-      ...payload,
-      embeds: resolvedEmbeds,
-    });
-
-    this._patch(data);
-    return this;
+    return (await channel.messages.edit(this.id, contentOrOptions)) as this;
   }
 
+  /**
+   * Deletes this message.
+   */
   public async delete(): Promise<void> {
-    await this.client.rest.delete(`/channels/${this.channelId}/messages/${this.id}`);
+    let channel = this.channel;
+    if (!channel) channel = await this.client.channels.fetch(this.channelId);
+
+    await channel.messages.delete(this.id);
   }
 
+  /**
+   * Pins this message.
+   */
   public async pin(): Promise<void> {
-    await this.client.rest.post(`/channels/${this.channelId}/messages/${this.id}/pin`, {});
-    this.pinned = true;
+    let channel = this.channel;
+    if (!channel) channel = await this.client.channels.fetch(this.channelId);
+
+    await channel.messages.pin(this.id);
   }
 
+  /**
+   * Unpins this message.
+   */
   public async unpin(): Promise<void> {
-    await this.client.rest.delete(`/channels/${this.channelId}/messages/${this.id}/pin`);
-    this.pinned = false;
+    let channel = this.channel;
+    if (!channel) channel = await this.client.channels.fetch(this.channelId);
+
+    await channel.messages.unpin(this.id);
   }
 
   /** Gets the Channel object from cache */

@@ -24,6 +24,7 @@ export * from "./structures/Server";
 export * from "./structures/TextChannel";
 export * from "./structures/UnknownChannel";
 export * from "./structures/User";
+export * from "./structures/ClientUser";
 
 // Builders
 export * from "./builders/EmbedBuilder";

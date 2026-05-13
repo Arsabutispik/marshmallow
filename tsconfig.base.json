@@ -8,7 +8,7 @@
 
     /* Strictness */
     "strict": true,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
     "forceConsistentCasingInFileNames": true,
 
     /* Monorepo / Library Settings */
