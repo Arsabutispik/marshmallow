@@ -3,9 +3,11 @@ import { User } from "../structures/User";
 import type { Client } from "../client/Client";
 
 export class UserManager {
-  public cache: Collection<string, User> = new Collection();
+  public cache: Collection<string, User>;
 
-  constructor(private client: Client) {}
+  constructor(private client: Client, limit: number = Infinity) {
+    this.cache = new Collection<string, User>(limit);
+  }
 
   /**
    * Transforms raw data into a User object and saves it to cache.

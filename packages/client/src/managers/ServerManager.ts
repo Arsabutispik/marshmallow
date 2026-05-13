@@ -3,9 +3,11 @@ import { Collection } from "../utils/Collection";
 import { Client } from "../client/Client";
 
 export class ServerManager {
-  public cache: Collection<string, Server> = new Collection();
+  public cache: Collection<string, Server>;
 
-  constructor(private client: Client) {}
+  constructor(private client: Client, limit: number = Infinity) {
+    this.cache = new Collection<string, Server>(limit);
+  }
 
   /**
    * Internal helper to add a server to the cache

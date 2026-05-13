@@ -5,12 +5,15 @@ import type { Server } from "../structures/Server";
 import * as util from "node:util";
 
 export class MemberManager {
-  public cache: Collection<string, Member> = new Collection();
+  public cache: Collection<string, Member>;
 
   constructor(
     private client: Client,
     private server: Server,
-  ) {}
+    limit: number = Infinity,
+  ) {
+    this.cache = new Collection<string, Member>(limit);
+  }
 
   public _add(data: any): Member {
     const id = data.user_id ?? data.id ?? data._id;

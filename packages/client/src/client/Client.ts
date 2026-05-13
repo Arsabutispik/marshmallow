@@ -32,6 +32,11 @@ export interface ClientEvents {
 
 export interface ClientOptions {
   sweepers?: SweeperOptions;
+  cacheLimits?: {
+    users?: number;
+    servers?: number;
+    channels?: number;
+  };
 }
 
 export class Client extends EventEmitter {
@@ -46,9 +51,9 @@ export class Client extends EventEmitter {
     super({ captureRejections: true });
     this.rest = new RESTManager(this);
     this.gateway = new GatewayManager(this);
-    this.channels = new ChannelManager(this);
-    this.servers = new ServerManager(this);
-    this.users = new UserManager(this);
+    this.channels = new ChannelManager(this, options.cacheLimits?.channels);
+    this.servers = new ServerManager(this, options.cacheLimits?.servers);
+    this.users = new UserManager(this, options.cacheLimits?.users);
 
     this.sweepers = new SweeperManager(this, options.sweepers ?? {});
   }

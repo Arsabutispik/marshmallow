@@ -2,6 +2,29 @@
  * A utility class that extends the native JavaScript Map with Array-like methods.
  */
 export class Collection<K, V> extends Map<K, V> {
+  public limit: number;
+
+  constructor(limit: number = Infinity) {
+    super();
+    this.limit = limit;
+  }
+
+  /**
+   * Overrides the default set method to enforce the maximum cache size.
+   */
+  public override set(key: K, value: V): this {
+    if (this.limit === 0) return this;
+
+    if (this.size >= this.limit && !this.has(key)) {
+      const oldestKey = this.keys().next().value;
+      if (oldestKey !== undefined) {
+        this.delete(oldestKey);
+      }
+    }
+
+    return super.set(key, value);
+  }
+
   /**
    * Finds the first item where the given function returns true.
    */

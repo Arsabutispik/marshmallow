@@ -4,9 +4,11 @@ import type { Client } from "../client/Client";
 import { Collection } from "../utils/Collection";
 
 export class ChannelManager {
-  public cache: Collection<string, BaseChannel> = new Collection();
+  public cache: Collection<string, BaseChannel>;
 
-  constructor(private client: Client) {}
+  constructor(private client: Client, limit: number = Infinity) {
+    this.cache = new Collection<string, BaseChannel>(limit);
+  }
 
   /**
    * Transforms raw data into a Channel object and saves it to the cache.

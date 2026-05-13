@@ -6,12 +6,15 @@ import * as util from "node:util";
 
 export class MessageManager {
   // 1. Explicitly public
-  public cache: Collection<string, Message> = new Collection();
+  public cache: Collection<string, Message>;
 
   constructor(
     private client: Client,
     private channel: BaseChannel,
-  ) {}
+    limit: number = Infinity
+  ) {
+    this.cache = new Collection<string, Message>(limit);
+  }
 
   /**
    * Internal method to add or update a message in the cache

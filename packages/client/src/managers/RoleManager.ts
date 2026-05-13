@@ -10,7 +10,10 @@ export class RoleManager {
   constructor(
     private client: Client,
     private server: Server,
-  ) {}
+    limit: number = Infinity
+  ) {
+    this.cache = new Collection<string, Role>(limit);
+  }
 
   public _add(data: any): Role {
     const id = data._id ?? data.id;
