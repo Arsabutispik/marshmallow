@@ -1,5 +1,17 @@
 # @stoatx/bot
 
+## [0.2.0](https://github.com/stoatx-ts/stoatx/compare/bot-v0.1.1...bot-v0.2.0) (2026-05-13)
+
+
+### Features
+
+* add @On and @Once decorators for event handling ([#15](https://github.com/stoatx-ts/stoatx/issues/15)) ([6922557](https://github.com/stoatx-ts/stoatx/commit/6922557a61c58535194ccee058b4ca6a453e769d))
+* make Client wrap the handler seamlessly ([#12](https://github.com/stoatx-ts/stoatx/issues/12)) ([46e3a94](https://github.com/stoatx-ts/stoatx/commit/46e3a947c1e99831a07f63204b1c8ee4739c7571))
+* rename project from Marshmallow to StoatX and update related dependencies ([#7](https://github.com/stoatx-ts/stoatx/issues/7)) ([9644ec9](https://github.com/stoatx-ts/stoatx/commit/9644ec92888db695d4706baa2aebb885f357a137))
+* simplify auto-discovery by removing commands directory path ([d3f3554](https://github.com/stoatx-ts/stoatx/commit/d3f355411b2364338b9e19da5d3b9e3f64fc254b))
+* update reply method to return Message object ([#16](https://github.com/stoatx-ts/stoatx/issues/16)) ([a2f3d46](https://github.com/stoatx-ts/stoatx/commit/a2f3d46ffb8c7e7c455a189e940aea7774a8f5b5))
+* write own library for bots from scratch ([#19](https://github.com/stoatx-ts/stoatx/issues/19)) ([32c3977](https://github.com/stoatx-ts/stoatx/commit/32c397720beeaea4c8742c0ef2dbf0f21f52f770))
+
 ## 0.1.1
 
 ### Patch Changes
