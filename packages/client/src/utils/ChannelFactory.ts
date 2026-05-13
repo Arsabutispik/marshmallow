@@ -3,6 +3,7 @@ import { BaseChannel, ChannelType } from "../structures/BaseChannel";
 import type { Client } from "../client/Client";
 import { UnknownChannel } from "../structures/UnknownChannel";
 import { DMChannel } from "../structures/DMChannel";
+import { GroupChannel } from "../structures/GroupChannel";
 
 export function createChannel(client: Client, data: any): BaseChannel {
   switch (data.channel_type) {
@@ -10,6 +11,8 @@ export function createChannel(client: Client, data: any): BaseChannel {
       return new TextChannel(client, data);
     case ChannelType.DM:
       return new DMChannel(client, data);
+    case ChannelType.GROUP:
+      return new GroupChannel(client, data);
     default:
       client.emit("debug", `Received unknown channel type: ${data.type}`);
       return new UnknownChannel(client, data);

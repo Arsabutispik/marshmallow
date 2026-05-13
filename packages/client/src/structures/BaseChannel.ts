@@ -4,10 +4,13 @@ import type { TextChannel } from "./TextChannel";
 import { MessageManager } from "../managers/MessageManager";
 import { sendMessage } from "../utils/messageSender";
 import { Message, MessageOptions } from "./Message";
+import { DMChannel } from "./DMChannel";
+import { GroupChannel } from "./GroupChannel";
 
 export enum ChannelType {
   TEXT = "TextChannel",
   DM = "DirectMessage",
+  GROUP = "Group"
 }
 
 export abstract class BaseChannel extends Base {
@@ -27,5 +30,13 @@ export abstract class BaseChannel extends Base {
 
   public isText(): this is TextChannel {
     return this.type === ChannelType.TEXT;
+  }
+
+  public isDM(): this is DMChannel {
+    return this.type === ChannelType.DM;
+  }
+
+  public isGroup(): this is GroupChannel {
+    return this.type === ChannelType.GROUP;
   }
 }
