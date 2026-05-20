@@ -35,15 +35,15 @@
   },
   "dependencies": {
     "events": "^3.3.0",
-    "undici": "^6.0.0",
-    "ws": "^8.16.0",
-    "ulid": "^3.0.2"
+    "ulid": "^3.0.2",
+    "undici": "^8.3.0",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "tsup": "^8.0.0",
     "@types/ws": "^8.5.0",
-    "typescript": "^5.0.0",
-    "prettier": "^3.8.1"
+    "prettier": "^3.8.1",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
   }
 }
