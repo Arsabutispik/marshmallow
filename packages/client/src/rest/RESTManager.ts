@@ -12,6 +12,56 @@ class AsyncBucket {
   public queue: Promise<void> = Promise.resolve();
 }
 
+/**
+ * Custom Error class for Stoat API failures
+ */
+export class StoatAPIError extends Error {
+  public statusCode: number;
+  public apiType: string;
+  public location: string;
+  public rawData: any;
+  public method?: string;
+  public path?: string;
+
+  constructor(statusCode: number, data: any, method?: string, path?: string) {
+    let errorMessage = "Unknown API Error";
+    let type = "Unknown";
+    let location = "Unknown";
+
+    if (typeof data === "object" && data !== null) {
+      if ("type" in data || "location" in data) {
+        type = String(data.type || type);
+        location = String(data.location || location);
+        errorMessage = `Type: ${type} (Location: ${location})`;
+      } else if ("message" in data) {
+        errorMessage = String(data.message);
+      } else {
+        try {
+          errorMessage = JSON.stringify(data);
+        } catch {
+          errorMessage = "Unparseable Error Object";
+        }
+      }
+    } else if (typeof data === "string" && data.trim() !== "") {
+      errorMessage = data;
+    }
+
+    const routeInfo = method && path ? ` on ${method.toUpperCase()} ${path}` : "";
+
+    super(`${errorMessage}${routeInfo}`);
+
+    this.name = `StoatAPIError[${statusCode}]`;
+    this.statusCode = statusCode;
+    this.apiType = type;
+    this.location = location;
+    this.rawData = data;
+    this.method = method;
+    this.path = path;
+
+    Object.setPrototypeOf(this, StoatAPIError.prototype);
+  }
+}
+
 export class RESTManager {
   private baseURL = "https://stoat.chat/api";
 
@@ -83,10 +133,18 @@ export class RESTManager {
       bucket.resetAt = Date.now() + Number(resetAfterHeader);
     }
 
-    if (response.statusCode === 429) {
-      const data = (await response.body.json()) as { retry_after: number };
+    // Safely parse the body (handles cases where Cloudflare returns HTML/Text on 502s)
+    const textBody = await response.body.text();
+    let data;
+    try {
+      data = JSON.parse(textBody);
+    } catch {
+      data = textBody;
+    }
 
-      const retryMs = data.retry_after || Number(resetAfterHeader) || 5000;
+    if (response.statusCode === 429) {
+      const retryMs =
+        typeof data === "object" && data?.retry_after ? data.retry_after : Number(resetAfterHeader) || 5000;
 
       this.client.emit("debug", `Hit 429 on [${method}:${endpoint}]. Retrying in ${retryMs}ms.`);
 
@@ -98,14 +156,8 @@ export class RESTManager {
       return this.execute(method, endpoint, body, bucket);
     }
 
-    const data = await response.body.json();
-
     if (response.statusCode >= 400) {
-      let errorMessage = "Unknown Error";
-      if (typeof data === "object" && data !== null && "message" in data) {
-        errorMessage = String((data as { message: string }).message);
-      }
-      throw new Error(`[Stoat API Error ${response.statusCode}]: ${errorMessage}`);
+      throw new StoatAPIError(response.statusCode, data, method, endpoint);
     }
 
     return data as any;
@@ -131,7 +183,14 @@ export class RESTManager {
     });
 
     if (!response.ok) {
-      throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+      let errData;
+      const errText = await response.text();
+      try {
+        errData = JSON.parse(errText);
+      } catch {
+        errData = errText;
+      }
+      throw new StoatAPIError(response.status, errData, "POST", "/attachments");
     }
 
     const data = (await response.json()) as { id: string };
