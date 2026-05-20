@@ -59,7 +59,6 @@ export class Message extends Base {
 
     const timestamp = decodeTime(this.id);
     if (timestamp) {
-      console.log(timestamp);
       this.createdAt = new Date(timestamp);
     }
 
