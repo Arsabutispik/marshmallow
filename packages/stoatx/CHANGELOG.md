@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.0...stoatx-v0.5.1) (2026-05-20)
+
+
+### Bug Fixes
+
+* update message handling to use correct types ([#28](https://github.com/stoatx-ts/stoatx/issues/28)) ([26a5f00](https://github.com/stoatx-ts/stoatx/commit/26a5f00f370cbcbbdf1e1ab50815e41f4b3c766b))
+
 ## [0.5.0](https://github.com/stoatx-ts/stoatx/compare/stoatx@0.4.0...stoatx-v0.5.0) (2026-05-13)
 
 
