@@ -178,7 +178,7 @@ export class StoatxHandler {
    * });
    * ```
    */
-  async handle(message: any): Promise<boolean> {
+  async handle(message: Message): Promise<boolean> {
     if (!message.channel || !message.author) {
       return false;
     }
@@ -193,10 +193,11 @@ export class StoatxHandler {
     const channelId = message.channel.id;
     const serverId = message.server?.id;
     const reply = async (content: string) => {
-      return await message.channel!.sendMessage(content);
+      return await message.channel!.send(content);
     };
 
-    return this.handleMessage(rawContent, message, {
+    // rawContent won't be null since a command will be invoked with a prefix
+    return this.handleMessage(rawContent!, message, {
       authorId,
       channelId,
       serverId,
@@ -302,7 +303,6 @@ export class StoatxHandler {
         await (instance as any).onError(ctx, error as Error);
       } else {
         console.error(`[Stoatx] Error in command ${metadata.name}:`, error);
-        await ctx.reply(`An error occurred: ${(error as Error).message}`);
       }
       return false;
     }
