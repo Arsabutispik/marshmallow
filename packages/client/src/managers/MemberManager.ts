@@ -65,14 +65,14 @@ export class MemberManager extends BaseManager<string, Member> {
     throw new TypeError("Invalid MemberResolvable provided.");
   }
 
-  public async fetch(member: MemberResolvable, force: boolean = true): Promise<Member> {
+  public async fetch(member: MemberResolvable, force: boolean = false): Promise<Member> {
     if (!force) {
       const cached = this.resolve(member);
       if (cached) return cached;
     }
 
     const id = this.resolveId(member);
-    const data = await this.client.rest.get(`/channels/${id}`);
+    const data = await this.client.rest.get(`/servers/${this.server.id}/members/${id}`);
 
     return this._add(data);
   }
