@@ -30,8 +30,8 @@ jobs:
       - name: Check Formatting
         run: pnpm run format:check
 
-      - name: Run Typecheck
-        run: pnpm run typecheck
-
       - name: Build Projects
         run: pnpm run build
+
+      - name: Run Typecheck
+        run: pnpm run typecheck

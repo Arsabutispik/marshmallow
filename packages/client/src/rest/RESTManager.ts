@@ -20,8 +20,8 @@ export class StoatAPIError extends Error {
   public apiType: string;
   public location: string;
   public rawData: any;
-  public method?: string;
-  public path?: string;
+  public method?: string | undefined;
+  public path?: string | undefined;
 
   constructor(statusCode: number, data: any, method?: string, path?: string) {
     let errorMessage = "Unknown API Error";
@@ -172,7 +172,7 @@ export class RESTManager {
     const url = "https://cdn.stoatusercontent.com/attachments";
 
     const formData = new FormData();
-    formData.append("file", new Blob([fileBuffer]), filename);
+    formData.append("file", new Blob([fileBuffer as Uint8Array<ArrayBuffer>]), filename);
 
     const response = await fetch(url, {
       method: "POST",

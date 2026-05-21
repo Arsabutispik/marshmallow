@@ -32,7 +32,7 @@ export class ChannelManager extends BaseManager<string, BaseChannel> {
    * @param limit The maximum number of channels to hold in the cache.
    */
   constructor(
-    public client: Client,
+    public override client: Client,
     limit: number = Infinity,
   ) {
     super(client, limit);

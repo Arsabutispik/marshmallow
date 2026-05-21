@@ -1,12 +1,12 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "moduleResolution": "Bundler",
-    "module": "ESNext",
-    "composite": true
+    "pretty": false,
+    "skipDefaultLibCheck": true,
+    "types": ["node", "undici"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]

@@ -122,7 +122,7 @@ export class CommandRegistry {
         roots.find((root) => {
           const relative = path.relative(root, file);
           return relative && !relative.startsWith("..") && !path.isAbsolute(relative);
-        }) ?? roots[0];
+        }) ?? roots[0]!;
       await this.loadFile(file, baseDir);
     }
 
