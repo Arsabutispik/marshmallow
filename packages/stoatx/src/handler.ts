@@ -203,7 +203,7 @@ export class StoatxHandler {
       serverId,
       reply,
     });
-    
+
     return true;
   }
 
