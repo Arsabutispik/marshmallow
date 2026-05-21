@@ -7,12 +7,17 @@ import type { Client } from "../client/Client";
  */
 export abstract class BaseManager<K, Holds> {
   public cache: Collection<K, Holds>;
+  protected readonly client: Client;
 
-  constructor(
-    public client: Client,
-    limit: number = Infinity,
-  ) {
+  protected constructor(client: Client, limit: number = Infinity) {
+    this.client = client;
     this.cache = new Collection<K, Holds>(limit);
+
+    Object.defineProperty(this, "client", {
+      value: client,
+      enumerable: false,
+      writable: false,
+    });
   }
 
   /**
