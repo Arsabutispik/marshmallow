@@ -281,9 +281,10 @@ export class GatewayManager {
     }
   }
 
-  private reconnect() {
+  private reconnect(): void {
     if (!this.token) {
-      return this.client.emit("error", new Error("RECONNECT_FAILED: No token available."));
+      this.client.emit("error", new Error("RECONNECT_FAILED: No token available."));
+      return;
     }
 
     let waitTime = Math.pow(2, this.reconnectAttempts) * 1000;

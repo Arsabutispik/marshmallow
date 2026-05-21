@@ -49,7 +49,7 @@ export class Client extends StoatClient {
 export class StoatxHandler {
   private readonly commandsDir: string | undefined;
   private readonly discoveryOptions: StoatxDiscoveryOptions | undefined;
-  private readonly prefixResolver: string | ((ctx: { serverId?: string }) => string | Promise<string>);
+  private readonly prefixResolver: string | ((ctx: { serverId?: string | undefined }) => string | Promise<string>);
   private readonly owners: Set<string>;
   private readonly registry: CommandRegistry;
   private readonly cooldowns: Map<string, Map<string, number>> = new Map();
@@ -114,7 +114,7 @@ export class StoatxHandler {
     meta: {
       authorId: string;
       channelId: string;
-      serverId?: string;
+      serverId?: string | undefined;
       reply: (content: string) => Promise<Message>;
     },
   ): Promise<CommandContext | null> {
@@ -197,12 +197,14 @@ export class StoatxHandler {
     };
 
     // rawContent won't be null since a command will be invoked with a prefix
-    return this.handleMessage(rawContent!, message, {
+    await this.handleMessage(rawContent!, message, {
       authorId,
       channelId,
       serverId,
       reply,
     });
+    
+    return true;
   }
 
   /**
@@ -227,17 +229,17 @@ export class StoatxHandler {
     meta: {
       authorId: string;
       channelId: string;
-      serverId?: string;
+      serverId?: string | undefined;
       reply: (content: string) => Promise<Message>;
     },
-  ): Promise<boolean> {
+  ): Promise<void> {
     const ctx = await this.parseMessage(rawContent, message, meta);
 
     if (!ctx) {
-      return false;
+      return;
     }
 
-    return this.execute(ctx);
+    await this.execute(ctx);
   }
 
   /**
@@ -367,7 +369,7 @@ export class StoatxHandler {
   /**
    * Resolve the prefix for a context
    */
-  private async resolvePrefix(serverId?: string): Promise<string> {
+  private async resolvePrefix(serverId?: string | undefined): Promise<string> {
     if (typeof this.prefixResolver === "function") {
       return this.prefixResolver({ serverId });
     }

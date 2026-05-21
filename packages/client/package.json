@@ -29,8 +29,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --external ws,undici --clean --tsconfig tsconfig.build.json",
-    "dev": "tsup src/index.ts --format cjs,esm --watch --dts --external ws,undici --tsconfig tsconfig.build.json",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
@@ -40,10 +40,6 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@types/ws": "^8.5.0",
-    "prettier": "^3.8.1",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
+    "@types/ws": "^8.5.0"
   }
 }

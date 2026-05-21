@@ -55,7 +55,7 @@ export class RoleManager extends BaseManager<string, Role> {
    * @param idParam An optional ID parameter if the payload wraps the role object.
    * @returns The newly created or updated Role object.
    */
-  public _add(data: any, idParam?: string): Role {
+  public override _add(data: any, idParam?: string): Role {
     const id = idParam ?? data._id ?? data.id;
     const existing = this.cache.get(id);
 
@@ -229,7 +229,7 @@ export class RoleManager extends BaseManager<string, Role> {
    * console.log("Role deleted successfully.");
    *
    * // Delete a role using a Role object
-   * const role = await server.roles.fetch("01JE2MM759J5D7CHJF084R7MJ2");
+   * const role = await server.roles.fetch("01JE2MM759J5D7CHJF084R7");
    * await server.roles.delete(role);
    * console.log("Role deleted successfully.");
    *

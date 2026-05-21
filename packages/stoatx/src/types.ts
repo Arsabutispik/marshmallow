@@ -63,7 +63,7 @@ export interface CommandContext {
   /** The channel ID */
   channelId: string;
   /** The server/guild ID (if applicable) */
-  serverId?: string;
+  serverId?: string | undefined;
   /** Parsed command arguments */
   args: string[];
   /** The prefix used */
@@ -114,7 +114,7 @@ export interface StoatxHandlerOptions {
   /** Auto-discovery options used when commandsDir is not provided */
   discovery?: StoatxDiscoveryOptions;
   /** Command prefix or prefix resolver function */
-  prefix: string | ((ctx: { serverId?: string }) => string | Promise<string>);
+  prefix: string | ((ctx: { serverId?: string | undefined }) => string | Promise<string>);
   /** Owner IDs for owner-only commands */
   owners?: string[];
   /** File extensions to load (default: ['.js', '.mjs', '.cjs']) */

@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
@@ -12,13 +12,5 @@
     "types": ["node"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"],
-  "references": [
-    {
-      "path": "../../packages/client"
-    },
-    {
-      "path": "../../packages/stoatx"
-    }
-  ]
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

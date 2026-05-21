@@ -9,7 +9,7 @@ export type AttachmentMetadata =
   | { type: "Video"; width: number; height: number };
 
 export class Attachment extends Base {
-  public id: string;
+  public override id: string;
   public tag: string;
   public filename: string;
   public metadata: AttachmentMetadata;
