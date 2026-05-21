@@ -9,10 +9,7 @@ export abstract class BaseManager<K, Holds> {
   public cache: Collection<K, Holds>;
   protected readonly client: Client;
 
-  protected constructor(
-    client: Client,
-    limit: number = Infinity,
-  ) {
+  protected constructor(client: Client, limit: number = Infinity) {
     this.client = client;
     this.cache = new Collection<K, Holds>(limit);
 
