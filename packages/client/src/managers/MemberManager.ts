@@ -52,6 +52,11 @@ export class MemberManager extends BaseManager<string, Member> {
     return new Member(this.client, data);
   }
 
+  /**
+   * Resolve a string or mention to Member
+   * @param member The MemberResolvable to resolve
+   * @returns The resolved Member or undefined if not found
+   */
   public resolve(member: MemberResolvable): Member | undefined {
     if (member instanceof Member) return member;
     if (member instanceof User) return this.cache.get(member.id);
@@ -59,12 +64,31 @@ export class MemberManager extends BaseManager<string, Member> {
     return undefined;
   }
 
+  /**
+   * Resolve a Member to their ID string.
+   * @param member The MemberResolvable to resolve
+   * @returns The resolved ID string
+   * @throws {TypeError} If the provided resolvable is invalid
+   */
   public resolveId(member: MemberResolvable): string {
     if (typeof member === "string") return member.replace(/[<@>]/g, "");
     if ("id" in member) return member.id;
     throw new TypeError("Invalid MemberResolvable provided.");
   }
 
+  /**
+   * Fetches a member from the server, or returns the cached version if available and not forced.
+   * @param member The MemberResolvable to fetch
+   * @param force Whether to bypass the cache and fetch fresh data from the API
+   * @returns A promise that resolves to the fetched Member
+   * @throws {Error} If the API request fails or the member is not found
+   * @example
+   * // Fetch a member by ID, using cache if available
+   * const member = await server.members.fetch("1234567890");
+   *
+   * // Fetch a member by mention, bypassing cache
+   * const member = await server.members.fetch("<@1234567890>", true);
+   */
   public async fetch(member: MemberResolvable, force: boolean = false): Promise<Member> {
     if (!force) {
       const cached = this.resolve(member);
@@ -122,6 +146,14 @@ export class MemberManager extends BaseManager<string, Member> {
    * Edits a member in the server.
    * @param member The MemberResolvable to edit.
    * @param options The fields to update (nickname, roles, timeout, etc.).
+   * @returns A promise that resolves to the updated Member.
+   * @throws {Error} If the API request fails or the member is not found.
+   * @example
+   * // Change a member's nickname and add a role
+   * const updatedMember = await server.members.edit("1234567890", {
+   *   nickname: "New Nickname",
+   *   roles: ["roleId1", "roleId2"],
+   * });
    */
   public async edit(member: MemberResolvable, options: MemberEditOptions): Promise<Member> {
     const id = this.resolveId(member);
@@ -154,6 +186,9 @@ export class MemberManager extends BaseManager<string, Member> {
   /**
    * Kicks a member from the server.
    * @param member The MemberResolvable to kick.
+   * @example
+   * // Kick a member by ID
+   * await server.members.kick("1234567890");
    */
   public async kick(member: MemberResolvable): Promise<void> {
     const id = this.resolveId(member);
@@ -165,6 +200,9 @@ export class MemberManager extends BaseManager<string, Member> {
    * Bans a member from the server.
    * @param member The MemberResolvable to ban.
    * @param options The ban options
+   * @example
+   * // Ban a member by ID
+   * await server.members.ban("1234567890", { reason: "Spamming", deleteMessageSeconds: 3600 });
    */
   public async ban(member: MemberResolvable, options?: MemberBanOptions): Promise<void> {
     const id = this.resolveId(member);
@@ -180,10 +218,27 @@ export class MemberManager extends BaseManager<string, Member> {
   /**
    * Unbans a user from the server
    * @param member The MemberResolvable to unban
+   * @example
+   * // Unban a member by ID
+   * await server.members.unban("1234567890");
    */
   public async unban(member: MemberResolvable): Promise<void> {
     const id = this.resolveId(member);
     await this.client.rest.delete(`/servers/${this.server.id}/bans/${id}`);
+  }
+
+  /**
+   * Timeouts a member in the server for a specified duration.
+   * @param member The MemberResolvable to timeout
+   * @param duration The duration of the timeout in milliseconds
+   * @example
+   * // Timeout a member for 10 minutes
+   * await server.members.setTimeout("1234567890", 10 * 60 * 1000);
+   */
+  public async setTimeout(member: MemberResolvable, duration: number): Promise<void> {
+    const id = this.resolveId(member);
+
+    await this.edit(id, { timeout: new Date(Date.now() + duration).toISOString() });
   }
 
   [util.inspect.custom]() {

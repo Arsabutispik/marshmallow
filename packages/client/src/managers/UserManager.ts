@@ -1,7 +1,7 @@
 import { User, UserProfile, UserStatus } from "../structures/User";
 import type { Client } from "../client/Client";
 import { BaseManager } from "./BaseManager";
-
+import { DMChannel } from "../structures/DMChannel";
 export type UserResolvable = User | string;
 
 export interface UserEditOptions {
@@ -180,5 +180,42 @@ export class UserManager extends BaseManager<string, User> {
     const data = await this.client.rest.patch(`/users/@me`, payload);
 
     return this._add(data);
+  }
+
+  /**
+   * The DM between the client's user and a user
+   *
+   * @param {string} userId The user id
+   * @returns {?DMChannel}
+   * @private
+   */
+  dmChannel(userId: string): DMChannel | null {
+    return (this.client.channels.cache.find((channel) => channel.isDM() && channel.recipients.includes(userId)) ??
+      null) as DMChannel | null;
+  }
+
+  /**
+   * Creates a DM channel between the client's user and another user.
+   * @param user The UserResolvable to create a DM with.
+   * @param options Additional options for DM creation.
+   * @param options.force If true, forces the creation of a new DM channel even if one already exists.
+   * @returns A promise that resolves to the created DMChannel object.
+   * @throws {TypeError} If an invalid UserResolvable is provided.
+   * @throws {Error} If the API request fails.
+   * @example
+   * // Create a DM with a user by ID
+   * const dm = await client.users.createDM("1234567890");
+   * console.log(`DM channel ID: ${dm.id}`);
+   */
+  public async createDM(user: UserResolvable, { force = false } = {}): Promise<DMChannel> {
+    const id = this.resolveId(user);
+
+    if (!force) {
+      const dmChannel = this.dmChannel(id);
+      if (dmChannel) return dmChannel;
+    }
+
+    const data = await this.client.rest.get(`/users/${id}/dm`);
+    return this.client.channels._add(data) as DMChannel;
   }
 }

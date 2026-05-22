@@ -2,7 +2,7 @@ import { BaseChannel } from "./BaseChannel";
 
 export class DMChannel extends BaseChannel {
   public active: boolean = false;
-  public recipients: DMChannel[] = [];
+  public recipients: string[] = [];
   public lastMessageId: string | null = null;
 
   constructor(client: any, data: any) {
