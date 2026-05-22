@@ -1,11 +1,11 @@
 # @stoatx/client
 
-A high-performance, fully-typed, and memory-efficient client library for the Revolt API. Built from the ground up for the Stoatx ecosystem.
+A high-performance, fully-typed, and memory-efficient client library for the Stoat API. Built from the ground up for the Stoatx ecosystem.
 
 [![npm version](https://img.shields.io/npm/v/@stoatx/client.svg?style=flat-square)](https://www.npmjs.com/package/@stoatx/client)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue.svg?style=flat-square)](https://www.typescriptlang.org/)
 
-`@stoatx/client` provides a robust object-oriented wrapper around Revolt's REST and WebSocket APIs. It features an intelligent caching system, automatic memory sweeping, and strict event typings to make building bots as frictionless as possible.
+`@stoatx/client` provides a robust object-oriented wrapper around Stoat's REST and WebSocket APIs. It features an intelligent caching system, automatic memory sweeping, and strict event typings to make building bots as frictionless as possible.
 
 ## Features
 
@@ -102,7 +102,7 @@ if (channel && channel.isText()) {
 ## Building Command Handlers
 
 While you can use `@stoatx/client` directly, it truly shines when paired with a command handler. Because the events are strictly typed using generics, you can easily build type-safe event registries.
-We recommend using the Stoatx Handler for a seamless experience, but you can also create your own custom command handler leveraging the client's event system.
+We recommend using the `Stoatx` for a seamless experience, but you can also create your own custom command handler leveraging the client's event system.
 
 ```typescript
 // Example of event listening

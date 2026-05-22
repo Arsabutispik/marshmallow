@@ -1,6 +1,6 @@
 # stoatx
 
-A high-performance, decorator-based command handler for the [Stoat](https://github.com/stoatchat/javascript-client-sdk) ecosystem. Inspired by [discordx](https://github.com/discordx-ts/discordx).
+A high-performance, decorator-based command handler for Stoat bots. Inspired by [discordx](https://github.com/discordx-ts/discordx).
 
 ## Features
 
@@ -204,4 +204,4 @@ All commands are defined through `@Stoat()` classes and `@SimpleCommand()` metho
 
 ## License
 
-AGPL-3.0-or-later
+MIT © [Stoatx / Stoatx Team]
