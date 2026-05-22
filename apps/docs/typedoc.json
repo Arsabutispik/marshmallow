@@ -6,8 +6,6 @@
   "includeVersion": true,
   "readme": "README.md",
   "tsconfig": "../../tsconfig.json",
-  "exclude": [
-    "../../apps/bot/**/*.ts"
-  ],
+  "exclude": ["../../apps/bot/**/*.ts"],
   "modifierTags": ["@SimpleCommand", "@Stoat", "@Guard", "@On", "@Once", "@internal", "@private"]
 }
