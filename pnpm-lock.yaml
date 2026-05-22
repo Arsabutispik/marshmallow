@@ -39,9 +39,15 @@ importers:
 
   apps/docs:
     devDependencies:
+      '@stoatx/client':
+        specifier: workspace:*
+        version: link:../../packages/client
       serve:
         specifier: ^14.2.6
         version: 14.2.6
+      stoatx:
+        specifier: workspace:*
+        version: link:../../packages/stoatx
       typedoc:
         specifier: ^0.28.19
         version: 0.28.19(typescript@6.0.3)
