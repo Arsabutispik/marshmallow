@@ -4,12 +4,17 @@
   "description": "Documentation for stoatx bot",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "echo \"Development server not configured yet\"",
-    "build": "echo \"Build not configured yet\""
+    "dev": "typedoc --watch",
+    "build": "typedoc",
+    "serve": "serve dist"
   },
   "private": true,
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.28.0"
+  "packageManager": "pnpm@10.28.0",
+  "devDependencies": {
+    "serve": "^14.2.6",
+    "typedoc": "^0.28.19"
+  }
 }

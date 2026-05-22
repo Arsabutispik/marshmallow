@@ -1,0 +1,21 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "../../packages/client/src/index.ts",
+    "../../packages/stoatx/src/index.ts"
+  ],
+  "out": "dist",
+  "name": "stoatx Documentation",
+  "includeVersion": true,
+  "readme": "README.md",
+  "tsconfig": "../../tsconfig.json",
+  "modifierTags": [
+    "@SimpleCommand",
+    "@Stoat",
+    "@Guard",
+    "@On",
+    "@Once",
+    "@internal",
+    "@private"
+  ]
+}
