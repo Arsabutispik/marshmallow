@@ -80,7 +80,7 @@ export class GatewayManager {
         if (payload.users) {
           for (const rawUser of payload.users) {
             this.client.users._add(rawUser);
-            if (rawUser.relation === "User" && !this.client.user) {
+            if (rawUser.relationship === "User" && !this.client.user) {
               this.client.user = new ClientUser(this.client, rawUser);
             }
           }
