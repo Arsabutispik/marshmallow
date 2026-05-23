@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/stoatx-ts/stoatx/compare/client-v0.2.0...client-v0.2.1) (2026-05-23)
+
+
+### Bug Fixes
+
+* force version bump to sync workspace ([#38](https://github.com/stoatx-ts/stoatx/issues/38)) ([d7394b2](https://github.com/stoatx-ts/stoatx/commit/d7394b2f36f9d9e0c0ea5fd6394d853b370e0692))
+
 ## [0.2.0](https://github.com/stoatx-ts/stoatx/compare/client-v0.1.1...client-v0.2.0) (2026-05-23)
 
 

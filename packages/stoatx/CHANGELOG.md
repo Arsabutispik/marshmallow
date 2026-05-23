@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.2](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.1...stoatx-v0.5.2) (2026-05-23)
+
+
+### Bug Fixes
+
+* force version bump to sync workspace ([#38](https://github.com/stoatx-ts/stoatx/issues/38)) ([d7394b2](https://github.com/stoatx-ts/stoatx/commit/d7394b2f36f9d9e0c0ea5fd6394d853b370e0692))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @stoatx/client bumped to 0.2.1
+
 ## [0.5.1](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.0...stoatx-v0.5.1) (2026-05-20)
 
 
