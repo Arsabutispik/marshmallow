@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0](https://github.com/stoatx-ts/stoatx/compare/client-v0.1.1...client-v0.2.0) (2026-05-23)
+
+
+### Features
+
+* add member structure functions ([#34](https://github.com/stoatx-ts/stoatx/issues/34)) ([fc82b27](https://github.com/stoatx-ts/stoatx/commit/fc82b270a5a59e502bf9a0a847d3810f14ebf128))
+
+
+### Bug Fixes
+
+* correct property name from 'relation' to 'relationship' in GatewayManager ([#36](https://github.com/stoatx-ts/stoatx/issues/36)) ([4e29e62](https://github.com/stoatx-ts/stoatx/commit/4e29e625444f91dfd2599f262abb1ddcf121b1e2))
+* make client field protected and non-enumerable in BaseManager ([#31](https://github.com/stoatx-ts/stoatx/issues/31)) ([9966bad](https://github.com/stoatx-ts/stoatx/commit/9966bad6dadee19d6d779d29cca6942887798ddd))
+
 ## [0.1.1](https://github.com/stoatx-ts/stoatx/compare/client-v0.1.0...client-v0.1.1) (2026-05-20)
 
 
