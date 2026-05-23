@@ -13,5 +13,6 @@
       "release-type": "node",
       "package-name": "@stoatx/bot"
     }
-  }
+  },
+  "plugins": ["node-workspace"]
 }
