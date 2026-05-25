@@ -8,6 +8,7 @@ import { MemberBanOptions, MemberEditOptions } from "../managers/MemberManager";
 import { MemberRoleManager } from "../managers/MemberRoleManager";
 import { StoatCDN } from "../utils/Constants";
 import { Attachment } from "./Attachment";
+import { Message, MessageOptions } from "./Message";
 
 /**
  * Represents a member of a server on Stoat
@@ -135,10 +136,26 @@ export class Member extends Base {
    * await member.setTimeout(600000);
    */
   public async setTimeout(duration: number): Promise<void> {
-    let server = this.server;
-    if (!server) server = await this.client.servers.fetch(this.serverId);
+    await this.edit({ timeout: new Date(Date.now() + duration).toISOString() });
+  }
 
-    await server.members.setTimeout(this.id, duration);
+  /**
+   * Send a message to this member.
+   * @param options The content or options for the message to send.
+   * @returns A promise that resolves to the sent Message object.
+   * @throws {Error} If the API request fails.
+   * @example
+   * // Send a message to this member
+   * const message = await member.send("Hello!");
+   * console.log(`Sent message ID: ${message.id}`);
+   */
+  public async send(options: string | MessageOptions): Promise<Message> {
+    let dmChannel = await this.client.users.createDM(this.id);
+    return dmChannel.messages.send(options);
+  }
+
+  public async setNickname(nickname: string): Promise<Member> {
+    return this.edit({ nickname });
   }
 
   /** Checks if the member has a specific permission */
@@ -151,11 +168,22 @@ export class Member extends Base {
    * @param options The options to edit the member with (nickname, roles, timeout, etc.)
    * @returns A promise that resolves to the updated Member.
    */
-  public async edit(options: MemberEditOptions): Promise<this> {
+  public async edit(options: MemberEditOptions): Promise<Member> {
     let server = this.server;
     if (!server) server = await this.client.servers.fetch(this.serverId);
 
-    return (await server.members.edit(this.id, options)) as this;
+    return await server.members.edit(this.id, options);
+  }
+
+  /**
+   * When concatenated with a string, this automatically returns the user's mention instead of the GuildMember object.
+   * @returns {string}
+   * @example
+   * // Logs: Hello from <@01JE2MM759J5D7CHJF084R7MJ2>!
+   * console.log(`Hello from ${member}!`);
+   */
+  public override toString(): string {
+    return `<@${this.id}>`;
   }
 
   /**
