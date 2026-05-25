@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.3](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.2...stoatx-v0.5.3) (2026-05-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @stoatx/client bumped to 0.2.2
+
 ## [0.5.2](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.1...stoatx-v0.5.2) (2026-05-23)
 
 
