@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/stoatx-ts/stoatx/compare/client-v0.2.1...client-v0.2.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* update client property visibility in multiple managers ([#41](https://github.com/stoatx-ts/stoatx/issues/41)) ([13a24cf](https://github.com/stoatx-ts/stoatx/commit/13a24cf29f2e1029b6dc9d0bfa0dcd0f212fad1c))
+
 ## [0.2.1](https://github.com/stoatx-ts/stoatx/compare/client-v0.2.0...client-v0.2.1) (2026-05-23)
 
 
