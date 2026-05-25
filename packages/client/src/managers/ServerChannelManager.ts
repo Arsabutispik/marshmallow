@@ -8,10 +8,7 @@ export class ServerChannelManager {
   public client: Client;
   public server: Server;
 
-  constructor(
-    client: Client,
-    server: Server,
-  ) {
+  constructor(client: Client, server: Server) {
     this.client = client;
     this.server = server;
   }

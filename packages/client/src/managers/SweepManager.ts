@@ -14,10 +14,7 @@ export class SweeperManager {
   public client: Client;
   public options: SweeperOptions;
 
-  constructor(
-    client: Client,
-    options: SweeperOptions,
-  ) {
+  constructor(client: Client, options: SweeperOptions) {
     this.client = client;
     this.options = options;
   }
