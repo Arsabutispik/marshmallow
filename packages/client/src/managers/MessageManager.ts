@@ -19,7 +19,7 @@ export interface MessageFetchOptions {
 export class MessageManager extends BaseManager<string, Message> {
   constructor(
     client: Client,
-    private channel: BaseChannel,
+    public channel: BaseChannel,
     limit: number = Infinity,
   ) {
     super(client, limit);

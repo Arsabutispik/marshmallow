@@ -11,11 +11,16 @@ export interface SweeperOptions {
 
 export class SweeperManager {
   private messageInterval: NodeJS.Timeout | null = null;
+  public client: Client;
+  public options: SweeperOptions;
 
   constructor(
-    private client: Client,
-    private options: SweeperOptions,
-  ) {}
+    client: Client,
+    options: SweeperOptions,
+  ) {
+    this.client = client;
+    this.options = options;
+  }
 
   public start() {
     if (this.options.messages) {

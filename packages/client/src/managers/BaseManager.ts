@@ -7,17 +7,11 @@ import type { Client } from "../client/Client";
  */
 export abstract class BaseManager<K, Holds> {
   public cache: Collection<K, Holds>;
-  protected readonly client: Client;
+  public client: Client;
 
   protected constructor(client: Client, limit: number = Infinity) {
     this.client = client;
     this.cache = new Collection<K, Holds>(limit);
-
-    Object.defineProperty(this, "client", {
-      value: client,
-      enumerable: false,
-      writable: false,
-    });
   }
 
   /**
@@ -36,7 +30,7 @@ export abstract class BaseManager<K, Holds> {
    * Transforms raw data into a Structure, patches if existing, and saves to cache.
    * @internal
    */
-  public _add(data: any): Holds {
+  _add(data: any): Holds {
     const id = this.extractId(data);
     const existing = this.cache.get(id);
 
