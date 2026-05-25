@@ -1,5 +1,5 @@
 {
-  "packages/stoatx": "0.5.2",
-  "packages/client": "0.2.1",
-  "apps/bot": "0.2.1"
+  "packages/stoatx": "0.5.3",
+  "packages/client": "0.2.2",
+  "apps/bot": "0.2.2"
 }
