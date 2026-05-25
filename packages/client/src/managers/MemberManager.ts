@@ -227,20 +227,6 @@ export class MemberManager extends BaseManager<string, Member> {
     await this.client.rest.delete(`/servers/${this.server.id}/bans/${id}`);
   }
 
-  /**
-   * Timeouts a member in the server for a specified duration.
-   * @param member The MemberResolvable to timeout
-   * @param duration The duration of the timeout in milliseconds
-   * @example
-   * // Timeout a member for 10 minutes
-   * await server.members.setTimeout("1234567890", 10 * 60 * 1000);
-   */
-  public async setTimeout(member: MemberResolvable, duration: number): Promise<void> {
-    const id = this.resolveId(member);
-
-    await this.edit(id, { timeout: new Date(Date.now() + duration).toISOString() });
-  }
-
   [util.inspect.custom]() {
     return this.cache;
   }
