@@ -73,15 +73,16 @@ importers:
 
   packages/stoatx:
     dependencies:
-      '@stoatx/client':
-        specifier: workspace:*
-        version: link:../client
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
       tinyglobby:
         specifier: ^0.2.10
         version: 0.2.15
+    devDependencies:
+      '@stoatx/client':
+        specifier: workspace:*
+        version: link:../client
 
 packages:
 
