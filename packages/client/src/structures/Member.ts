@@ -136,9 +136,6 @@ export class Member extends Base {
    * await member.setTimeout(600000);
    */
   public async setTimeout(duration: number): Promise<void> {
-    let server = this.server;
-    if (!server) server = await this.client.servers.fetch(this.serverId);
-
     await this.edit({ timeout: new Date(Date.now() + duration).toISOString() });
   }
 
