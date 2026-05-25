@@ -28,7 +28,7 @@ export class RoleManager extends BaseManager<string, Role> {
    */
   constructor(
     client: Client,
-    private server: Server,
+    public server: Server,
     limit: number = Infinity,
   ) {
     super(client, limit);

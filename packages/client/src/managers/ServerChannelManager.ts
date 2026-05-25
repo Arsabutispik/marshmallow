@@ -5,10 +5,13 @@ import type { Client } from "../client/Client";
 import * as util from "node:util";
 
 export class ServerChannelManager {
-  constructor(
-    private client: Client,
-    private server: Server,
-  ) {}
+  public client: Client;
+  public server: Server;
+
+  constructor(client: Client, server: Server) {
+    this.client = client;
+    this.server = server;
+  }
 
   public get cache(): Collection<string, BaseChannel> {
     return this.client.channels.cache.filter((channel) => (channel as any).serverId === this.server.id);

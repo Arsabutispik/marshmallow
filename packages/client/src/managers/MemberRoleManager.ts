@@ -4,7 +4,10 @@ import { Collection } from "../utils/Collection";
 import type { RoleResolvable } from "./RoleManager";
 
 export class MemberRoleManager {
-  constructor(private member: Member) {}
+  public member: Member;
+  constructor(member: Member) {
+    this.member = member;
+  }
 
   /**
    * Gets a Collection of the actual Role objects this member has.

@@ -6,6 +6,7 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "noEmitHelpers": false,
     "composite": false,
     "declaration": false,
     "declarationMap": false,
