@@ -204,14 +204,14 @@ export class RESTManager {
   public post(endpoint: string, body: any) {
     return this.makeRequest("POST", endpoint, body);
   }
-  public patch(endpoint: string, body: any) {
+  public patch(endpoint: string, body?: any) {
     return this.makeRequest("PATCH", endpoint, body);
   }
-  public delete(endpoint: string) {
-    return this.makeRequest("DELETE", endpoint);
+  public delete(endpoint: string, body?: any) {
+    return this.makeRequest("DELETE", endpoint, body);
   }
 
-  async put(endpoint: string, body: any) {
+  async put(endpoint: string, body?: any) {
     return this.makeRequest("PUT", endpoint, body);
   }
 }
