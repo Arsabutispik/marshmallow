@@ -6,6 +6,7 @@ import { DMChannel } from "../structures/DMChannel";
 import { GroupChannel } from "../structures/GroupChannel";
 import { Permissions, type PermissionResolvable } from "../utils/permissions";
 import { BaseManager } from "./BaseManager";
+import { MessageResolvable } from "./MessageManager";
 
 export type ChannelResolvable = BaseChannel | string;
 
@@ -95,7 +96,7 @@ export class ChannelManager extends BaseManager<string, BaseChannel> {
   /**
    * Fetches a Channel from the API or resolves it from the local cache.
    * @param channel The ID, mention, or Channel object to fetch.
-   * @param force Whether to skip the cache check and force a direct API request. Defaults to true.
+   * @param force Whether to skip the cache check and force a direct API request. Defaults to false.
    * @returns A promise that resolves to the fetched BaseChannel object.
    * @throws {TypeError} If an invalid ChannelResolvable is provided.
    * @throws {Error} If the API request fails.
@@ -103,7 +104,7 @@ export class ChannelManager extends BaseManager<string, BaseChannel> {
    * // Fetch a channel, bypassing cache
    * const channel = await client.channels.fetch("01H...");
    */
-  public async fetch(channel: ChannelResolvable, force: boolean = true): Promise<BaseChannel> {
+  public async fetch(channel: ChannelResolvable, force: boolean = false): Promise<BaseChannel> {
     if (!force) {
       const cached = this.resolve(channel);
       if (cached) return cached;
@@ -242,5 +243,51 @@ export class ChannelManager extends BaseManager<string, BaseChannel> {
     const id = this.resolveId(channel);
     await this.client.rest.delete(`/channels/${id}`);
     this.cache.delete(id);
+  }
+
+  /**
+   * Pin a message
+   * @param id Channel ID
+   * @param messageId Message ID
+   * @throws {Error} If the API request fails.
+   * @example
+   * await client.channels.pin("CHANNEL_ID", "MESSAGE_ID");
+   */
+  public async pin(id: string, messageId: string): Promise<void> {
+    await this.client.rest.post(`/channels/${id}/pins/${messageId}`);
+  }
+
+  /**
+   * Unpin a message
+   * @param id Channel ID
+   * @param messageId Message ID
+   * @throws {Error} If the API request fails
+   * @example
+   * await client.channels.unpin("CHANNEL_ID", "MESSAGE_ID");
+   */
+  public async unpin(id: string, messageId: string): Promise<void> {
+    await this.client.rest.delete(`/channels/${id}/pins/${messageId}`);
+  }
+
+  /**
+   * Bulk delete up to 100 messages
+   * @param id Channel ID
+   * @param messages An array of MessageResolvable
+   * @throws {Error} If the API request fails
+   * @example
+   * await client.channels.bulkDelete("CHANNEL_ID", ["MESSAGE_ID_1", "MESSAGE_ID_2", "MESSAGE_ID_3"]);
+   */
+  public async bulkDelete(id: string, messages: MessageResolvable[]): Promise<void> {
+    if (!Array.isArray(messages) || messages.length === 0 || messages.length > 100) {
+      throw new TypeError("Messages must be an array of 1-100 MessageResolvable items.");
+    }
+
+    const messageIds = messages.map((msg) => {
+      if (typeof msg === "string") return msg.replace(/[<#>]/g, "");
+      if ("id" in msg) return msg.id;
+      throw new TypeError("Invalid MessageResolvable provided. Expected a Message object or a string ID/Mention.");
+    })
+
+    await this.client.rest.delete(`/channels/${id}/messages/bulk`, { messages: messageIds });
   }
 }
