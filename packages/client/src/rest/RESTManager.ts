@@ -201,7 +201,7 @@ export class RESTManager {
   public get(endpoint: string) {
     return this.makeRequest("GET", endpoint);
   }
-  public post(endpoint: string, body: any) {
+  public post(endpoint: string, body?: any) {
     return this.makeRequest("POST", endpoint, body);
   }
   public patch(endpoint: string, body?: any) {
