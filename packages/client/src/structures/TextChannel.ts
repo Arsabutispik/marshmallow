@@ -38,6 +38,15 @@ export class TextChannel extends BaseChannel {
           case "Description":
             this.description = null;
             break;
+          case "Icon":
+            this.icon = null;
+            break;
+          case "DefaultPermissions":
+            this.defaultPermissions = data.default_permissions;
+            break;
+          case "Voice":
+            this.voice = data.voice;
+            break;
         }
       }
     }
@@ -174,8 +183,50 @@ export class TextChannel extends BaseChannel {
     return this;
   }
 
+  /**
+   * Set whether this channel is NSFW
+   * @param nsfw
+   * @throws {Error} If the API request fails
+   * @returns The updated TextChannel
+   * @example
+   * // Mark the channel as NSFW
+   * await channel.setNSFW(true);
+   * // Mark the channel as SFW
+   * await channel.setNSFW(false);
+   */
   public async setNSFW(nsfw: boolean): Promise<TextChannel> {
     await this.edit({ nsfw });
+    return this;
+  }
+
+  /**
+   * Set the channel slowmode in seconds
+   * @param slowmode
+   * @throws {Error} If the API request fails
+   * @returns The updated TextChannel
+   * @example
+   * // Set the slowmode to 5 seconds
+   * await channel.setSlowmode(5);
+   * // Remove slowmode
+   * await channel.setSlowmode(0);
+   */
+  public async setSlowmode(slowmode: number): Promise<TextChannel> {
+    await this.edit({ slowmode });
+    return this;
+  }
+
+  /**
+   * Set the channel Icon
+   * @param id Autumn ID to use
+   * @throws {Error} If the API request fails
+   * @returns The updated TextChannel
+   * @example
+   * await channel.setIcon("123");
+    * // Remove the channel icon
+    * await channel.setIcon(null);
+   */
+  public async setIcon(id: string | null): Promise<TextChannel> {
+    await this.edit({ icon: id });
     return this;
   }
 }
