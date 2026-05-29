@@ -1,5 +1,19 @@
 # @stoatx/bot
 
+## [0.3.0](https://github.com/stoatx-ts/stoatx/compare/bot-v0.2.2...bot-v0.3.0) (2026-05-29)
+
+
+### Features
+
+* add emoji management and reaction ([#51](https://github.com/stoatx-ts/stoatx/issues/51)) ([3119b4a](https://github.com/stoatx-ts/stoatx/commit/3119b4a5ffd0e039af4c1d40100e97c233335ebd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * stoatx bumped to 0.5.4
+
 ## [0.2.2](https://github.com/stoatx-ts/stoatx/compare/bot-v0.2.1...bot-v0.2.2) (2026-05-25)
 
 

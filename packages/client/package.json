@@ -1,6 +1,6 @@
 {
   "name": "@stoatx/client",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "type": "module",
   "description": "A client library for the Stoatx command handler, providing utilities and integrations for building command-based applications within the Stoat ecosystem.",
   "repository": {
