@@ -27,6 +27,7 @@ export * from "./structures/UnknownChannel";
 export * from "./structures/User";
 export * from "./structures/ClientUser";
 export * from "./structures/Emoji";
+export * from "./structures/MessageReaction";
 
 // Builders
 export * from "./builders/EmbedBuilder";

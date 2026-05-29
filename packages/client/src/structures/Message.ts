@@ -11,6 +11,7 @@ import { decodeTime } from "ulid";
 import { UserResolvable } from "../managers/UserManager";
 import { ReactionCollector, ReactionCollectorOptions } from "../utils/ReactionCollector";
 import { Collection } from "../utils/Collection";
+import { MessageReaction } from "./MessageReaction";
 
 export interface MessageOptions {
   content?: string;
@@ -208,16 +209,12 @@ export class Message extends Base {
    * @returns A promise that resolves to a collection of reactions collected.
    * @example
    * // Await reactions
-   * const filter = (reaction) => reaction.emojiId === '👍' && reaction.userId === author.id;
+   * const filter = (reaction) => reaction.emoji.id === '123' && reaction.users.has(author.id);
    * message.awaitReactions({ filter, max: 1, time: 60000 })
    *   .then(collected => console.log(collected.size))
    *   .catch(console.error);
    */
-  public awaitReactions(
-    options?: ReactionCollectorOptions,
-  ): Promise<
-    Collection<string, { emojiId: string; userId: string; message: Message | { id: string; channelId: string } }>
-  > {
+  public awaitReactions(options?: ReactionCollectorOptions): Promise<Collection<string, MessageReaction>> {
     return new Promise((resolve) => {
       const collector = this.createReactionCollector(options);
       collector.once("end", (collected) => resolve(collected));

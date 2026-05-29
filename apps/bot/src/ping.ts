@@ -10,5 +10,7 @@ export class PingCommand {
     const reply = await ctx.message.reply("Calculating Ping...");
     const latency = reply.createdAt!.getTime() - ctx.message.createdAt!.getTime();
     await reply.edit(`Pong! Latency: ${latency}ms`);
+    const collected = await ctx.message.awaitReactions({ time: 10000 });
+    console.log(collected);
   }
 }
