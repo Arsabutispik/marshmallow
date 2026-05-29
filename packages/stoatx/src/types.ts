@@ -81,9 +81,12 @@ export interface CommandContext {
  */
 export interface StoatLifecycle {
   /** Optional: Called when an error occurs during command execution */
-  onError?(ctx: CommandContext, error: Error): Promise<void>;
+  onError?(ctx: CommandContext, error: Error): Promise<void> | void;
   /** Optional: Called when a cooldown is active */
-  onCooldown?(ctx: CommandContext, remaining: number): Promise<void>;
+  onCooldown?(ctx: CommandContext, remaining: number): Promise<void> | void;
+
+  /** Allows the class to contain other methods (such as your commands) */
+  [key: string]: any;
 }
 
 export interface StoatxGuard {

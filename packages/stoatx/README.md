@@ -98,9 +98,38 @@ Marks a method as a command.
   nsfw: false,
 })
 async ban(ctx: Context) {
-  // ...
+  // logic
 }
 ```
+
+### StoatLifecycle Interface
+
+Provides intellisense for lifecycle hooks like `onError` and `onCooldown` on your `@Stoat()` classes.
+
+```typescript
+import { Stoat, SimpleCommand, CommandContext, StoatLifecycle } from "stoatx";
+
+@Stoat()
+export class MyCommands implements StoatLifecycle {
+  @SimpleCommand({ cooldown: 5000 })
+  async ping(ctx: CommandContext) {
+    await ctx.reply(`Pong! 🏓`);
+  }
+
+  // Called when the command is placed on cooldown
+  async onCooldown(ctx: CommandContext, remaining: number) {
+    await ctx.reply(`You are in cooldown, wait ${(remaining / 1000).toFixed(1)} seconds!`);
+  }
+
+  // Called when an error occurs during execution
+  async onError(ctx: CommandContext, error: Error) {
+    console.error(error);
+    await ctx.reply("An error occurred");
+  }
+}
+```
+
+## Guards
 
 ### @Guard(GuardClass)
 

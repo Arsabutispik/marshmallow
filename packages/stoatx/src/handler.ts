@@ -291,12 +291,12 @@ export class StoatxHandler {
     }
 
     try {
-      await (instance as any)[methodName](ctx);
-
-      // Set cooldown after successful execution
+      // Set cooldown before execution to prevent concurrent executions
       if (metadata.cooldown > 0) {
         this.setCooldown(ctx.authorId, metadata);
       }
+
+      await (instance as any)[methodName](ctx);
 
       return true;
     } catch (error) {
@@ -385,10 +385,15 @@ export class StoatxHandler {
     const commandCooldowns = this.cooldowns.get(metadata.name);
     if (!commandCooldowns) return true;
 
-    const userCooldown = commandCooldowns.get(userId);
-    if (!userCooldown) return true;
+    const expirationTime = commandCooldowns.get(userId);
+    if (!expirationTime) return true;
 
-    return Date.now() >= userCooldown;
+    if (Date.now() > expirationTime) {
+      commandCooldowns.delete(userId);
+      return true;
+    }
+
+    return false;
   }
 
   /**
