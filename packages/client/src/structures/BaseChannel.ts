@@ -7,6 +7,7 @@ import { DMChannel } from "./DMChannel";
 import { GroupChannel } from "./GroupChannel";
 import { ChannelEditOptions } from "../managers/ChannelManager";
 import { Collection } from "../utils/Collection";
+import { MessageCollector, MessageCollectorOptions } from "../utils/MessageCollector";
 
 export enum ChannelType {
   TEXT = "TextChannel",
@@ -119,6 +120,44 @@ export abstract class BaseChannel extends Base {
    */
   public async bulkDelete(messages: MessageResolvable[]): Promise<void> {
     await this.client.channels.bulkDelete(this.id, messages);
+  }
+
+  /**
+   * Creates a MessageCollector to collect messages in this channel.
+   * @param options The options for the collector.
+   * @returns The instantiated MessageCollector
+   * @example
+   * const collector = channel.createMessageCollector({ filter: m => m.authorId === '123', time: 15000 });
+   * collector.on('collect', m => console.log(`Collected ${m.content}`));
+   * collector.on('end', collected => console.log(`Collected ${collected.size} items`));
+   */
+  public createMessageCollector(options?: MessageCollectorOptions): MessageCollector {
+    return new MessageCollector(this, options);
+  }
+
+  /**
+   * Awaits messages in this channel that meet certain criteria.
+   * @param options The options for the collector.
+   * @returns A promise that resolves to a collection of messages.
+   * @example
+   * // Await !vote messages
+   * const filter = m => m.content.startsWith('!vote');
+   * channel.awaitMessages({ filter, max: 4, time: 60000 })
+   *   .then(collected => console.log(collected.size))
+   *   .catch(console.error);
+   */
+  public awaitMessages(options: MessageCollectorOptions = {}): Promise<Collection<string, Message>> {
+    return new Promise((resolve, reject) => {
+      const collector = this.createMessageCollector(options);
+
+      collector.once("end", (collected, reason) => {
+        if (options.max && reason !== "limit" && reason !== "time") {
+          return reject(new Error(`Collector ended with reason: ${reason}`));
+        }
+
+        resolve(collected);
+      });
+    });
   }
 
   public isText(): this is TextChannel {

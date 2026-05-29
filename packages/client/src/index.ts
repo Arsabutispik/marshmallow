@@ -32,3 +32,5 @@ export * from "./builders/EmbedBuilder";
 // Utils
 export * from "./utils/Collection";
 export * from "./utils/permissions";
+export * from "./utils/Collector";
+export * from "./utils/MessageCollector";
