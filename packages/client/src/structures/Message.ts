@@ -213,7 +213,11 @@ export class Message extends Base {
    *   .then(collected => console.log(collected.size))
    *   .catch(console.error);
    */
-  public awaitReactions(options?: ReactionCollectorOptions): Promise<Collection<string, { emojiId: string; userId: string; message: Message | { id: string; channelId: string } }>> {
+  public awaitReactions(
+    options?: ReactionCollectorOptions,
+  ): Promise<
+    Collection<string, { emojiId: string; userId: string; message: Message | { id: string; channelId: string } }>
+  > {
     return new Promise((resolve) => {
       const collector = this.createReactionCollector(options);
       collector.once("end", (collected) => resolve(collected));

@@ -203,9 +203,7 @@ export class GatewayManager {
         if (message && message.reactions && message.reactions[payload.emoji_id]) {
           const reactions = message.reactions[payload.emoji_id];
           if (reactions) {
-            message.reactions[payload.emoji_id] = reactions.filter(
-              (userId) => userId !== payload.user_id
-            );
+            message.reactions[payload.emoji_id] = reactions.filter((userId) => userId !== payload.user_id);
 
             if (message.reactions[payload.emoji_id]!.length === 0) {
               delete message.reactions[payload.emoji_id];

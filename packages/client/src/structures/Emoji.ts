@@ -26,4 +26,3 @@ export class Emoji extends Base {
     if (data.nsfw !== undefined) this.nsfw = data.nsfw;
   }
 }
-

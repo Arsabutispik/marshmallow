@@ -1,12 +1,19 @@
 import { Collector, CollectorOptions } from "./Collector";
 import { Message } from "../structures/Message";
 
-export interface ReactionCollectorOptions extends CollectorOptions<{ emojiId: string; userId: string; message: Message | { id: string; channelId: string } }> {
+export interface ReactionCollectorOptions extends CollectorOptions<{
+  emojiId: string;
+  userId: string;
+  message: Message | { id: string; channelId: string };
+}> {
   /** The maximum number of reactions to collect */
   max?: number;
 }
 
-export class ReactionCollector extends Collector<string, { emojiId: string; userId: string; message: Message | { id: string; channelId: string } }> {
+export class ReactionCollector extends Collector<
+  string,
+  { emojiId: string; userId: string; message: Message | { id: string; channelId: string } }
+> {
   public messageId: string;
   public total = 0;
 
@@ -29,12 +36,20 @@ export class ReactionCollector extends Collector<string, { emojiId: string; user
     });
   }
 
-  public collect(reaction: { emojiId: string; userId: string; message: Message | { id: string; channelId: string } }): string | null {
+  public collect(reaction: {
+    emojiId: string;
+    userId: string;
+    message: Message | { id: string; channelId: string };
+  }): string | null {
     if (reaction.message.id !== this.messageId) return null;
     return `${reaction.emojiId}-${reaction.userId}`; // Use a composite key, or just generate a unique one
   }
 
-  public dispose(reaction: { emojiId: string; userId: string; message: Message | { id: string; channelId: string } }): string | null {
+  public dispose(reaction: {
+    emojiId: string;
+    userId: string;
+    message: Message | { id: string; channelId: string };
+  }): string | null {
     if (reaction.message.id !== this.messageId) return null;
     return `${reaction.emojiId}-${reaction.userId}`;
   }
@@ -60,4 +75,3 @@ export class ReactionCollector extends Collector<string, { emojiId: string; user
     return null;
   }
 }
-
