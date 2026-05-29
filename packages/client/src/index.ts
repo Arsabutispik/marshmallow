@@ -11,6 +11,7 @@ export * from "./managers/ServerChannelManager";
 export * from "./managers/ServerManager";
 export * from "./managers/SweepManager";
 export * from "./managers/UserManager";
+export * from "./managers/EmojiManager";
 
 // Structures
 export * from "./structures/Attachment";
@@ -25,6 +26,8 @@ export * from "./structures/TextChannel";
 export * from "./structures/UnknownChannel";
 export * from "./structures/User";
 export * from "./structures/ClientUser";
+export * from "./structures/Emoji";
+export * from "./structures/MessageReaction";
 
 // Builders
 export * from "./builders/EmbedBuilder";
@@ -34,3 +37,4 @@ export * from "./utils/Collection";
 export * from "./utils/permissions";
 export * from "./utils/Collector";
 export * from "./utils/MessageCollector";
+export * from "./utils/ReactionCollector";
