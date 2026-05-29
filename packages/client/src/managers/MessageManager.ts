@@ -188,7 +188,7 @@ export class MessageManager extends BaseManager<string, Message> {
   public async react(message: MessageResolvable, reaction: string): Promise<void> {
     const id = this.resolveId(message);
     await this.client.rest.put(
-      `/channels/${this.channel.id}/messages/${id}/reactions/${encodeURIComponent(reaction)}/@me`,
+      `/channels/${this.channel.id}/messages/${id}/reactions/${encodeURIComponent(reaction)}`,
     );
   }
 
@@ -216,9 +216,15 @@ export class MessageManager extends BaseManager<string, Message> {
   ): Promise<void> {
     const id = this.resolveId(message);
     const targetUser = userId ? this.client.users.resolveId(userId) : undefined;
-    await this.client.rest.delete(
-      `/channels/${this.channel.id}/messages/${id}/reactions/${encodeURIComponent(reaction)}?user_id=${targetUser}&remove_all=${removeAll}`,
-    );
+
+    const params = new URLSearchParams();
+    if (targetUser) params.append("user_id", targetUser);
+    if (removeAll) params.append("remove_all", "true");
+
+    const queryString = params.toString();
+    const endpoint = `/channels/${this.channel.id}/messages/${id}/reactions/${encodeURIComponent(reaction)}${queryString ? `?${queryString}` : ""}`;
+
+    await this.client.rest.delete(endpoint);
   }
 
   /**
