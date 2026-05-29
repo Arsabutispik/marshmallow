@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.5](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.4...stoatx-v0.5.5) (2026-05-29)
+
+
+### Bug Fixes
+
+* adjust cooldown logic to prevent concurrent command executions ([#52](https://github.com/stoatx-ts/stoatx/issues/52)) ([16f17bc](https://github.com/stoatx-ts/stoatx/commit/16f17bc54b7580f7d8ae46c70e4ff11bc94c125b))
+
 ## [0.5.4](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.3...stoatx-v0.5.4) (2026-05-29)
 
 
