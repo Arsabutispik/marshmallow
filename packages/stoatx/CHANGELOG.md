@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.4](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.3...stoatx-v0.5.4) (2026-05-29)
+
+
+### Bug Fixes
+
+* update peerDependencies and devDependencies ([#43](https://github.com/stoatx-ts/stoatx/issues/43)) ([7fb1df0](https://github.com/stoatx-ts/stoatx/commit/7fb1df0658854a59cbf9f4e29656989365fd556d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @stoatx/client bumped to 0.3.0
+  * peerDependencies
+    * @stoatx/client bumped from ^0.2.2 to ^0.3.0
+
 ## [0.5.3](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.2...stoatx-v0.5.3) (2026-05-25)
 
 

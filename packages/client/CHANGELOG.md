@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/stoatx-ts/stoatx/compare/client-v0.2.2...client-v0.3.0) (2026-05-29)
+
+
+### Features
+
+* add emoji management and reaction ([#51](https://github.com/stoatx-ts/stoatx/issues/51)) ([3119b4a](https://github.com/stoatx-ts/stoatx/commit/3119b4a5ffd0e039af4c1d40100e97c233335ebd))
+* add more methods to member structure ([#45](https://github.com/stoatx-ts/stoatx/issues/45)) ([dd0ea64](https://github.com/stoatx-ts/stoatx/commit/dd0ea64f9c5d45f337bdc8a1a2453fb87dcf2d2e))
+* add reaction methods ([#50](https://github.com/stoatx-ts/stoatx/issues/50)) ([670c47f](https://github.com/stoatx-ts/stoatx/commit/670c47fd75e5eb3064d4fb9a1a8fb4dad54a11c1))
+* add several methods to channels to improve DX ([#47](https://github.com/stoatx-ts/stoatx/issues/47)) ([07a4bc0](https://github.com/stoatx-ts/stoatx/commit/07a4bc07e39ca9847da078c36989737013fc9d26))
+* add several methods to improve DX ([#48](https://github.com/stoatx-ts/stoatx/issues/48)) ([839d3b7](https://github.com/stoatx-ts/stoatx/commit/839d3b7451f0827c1565c50740174213ef53b5c2))
+* implement collectors ([#49](https://github.com/stoatx-ts/stoatx/issues/49)) ([af6f498](https://github.com/stoatx-ts/stoatx/commit/af6f4985c0a597cd70efb702820d8dce493038ef))
+
 ## [0.2.2](https://github.com/stoatx-ts/stoatx/compare/client-v0.2.1...client-v0.2.2) (2026-05-25)
 
 
