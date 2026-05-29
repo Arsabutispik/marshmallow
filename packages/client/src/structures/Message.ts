@@ -8,6 +8,7 @@ import { EmbedBuilder, TextEmbedData } from "../builders/EmbedBuilder";
 import { Attachment } from "./Attachment";
 import { Server } from "./Server";
 import { decodeTime } from "ulid";
+import { UserResolvable } from "../managers/UserManager";
 
 export interface MessageOptions {
   content?: string;
@@ -135,6 +136,55 @@ export class Message extends Base {
     if (!channel) channel = await this.client.channels.fetch(this.channelId);
 
     await channel.messages.unpin(this.id);
+  }
+
+  /**
+   * React to this message
+   * @param reaction The emoji to react with. Can be a Unicode emoji or a custom emoji ID.
+   * @throws {Error} If the API request fails.
+   * @example
+   * await message.react("👍");
+   * await message.react("customEmojiId");
+   */
+  public async react(reaction: string): Promise<void> {
+    let channel = this.channel;
+    if (!channel) channel = await this.client.channels.fetch(this.channelId);
+
+    await channel.messages.react(this.id, reaction);
+  }
+
+  /**
+   * Remove a reaction from this message
+   * @param reaction The emoji to remove. Can be a Unicode emoji or a custom emoji ID.
+   * @param userId The ID of the user whose reaction to remove. If not provided, removes the current user's reaction.
+   * @param removeAll Remove all reactions of this type.
+   * @throws {Error} If both userId and removeAll are provided, or if the API request fails.
+   * @example
+   * // Remove the current user's reaction
+   * await message.removeReaction("👍");
+   * // Remove a specific user's reaction
+   * await message.removeReaction("👍", userId);
+   * // Remove all reactions of this type
+   * await message.removeReaction("👍", undefined, true);
+   */
+  public async removeReaction(reaction: string, userId?: UserResolvable, removeAll?: boolean): Promise<void> {
+    let channel = this.channel;
+    if (!channel) channel = await this.client.channels.fetch(this.channelId);
+
+    await channel.messages.removeReaction(this.id, reaction, userId, removeAll);
+  }
+
+  /**
+   * Remove all reactions from this message
+   * @throws {Error} If the API request fails.
+   * @example
+   * await message.clearReactions();
+   */
+  public async clearReactions(): Promise<void> {
+    let channel = this.channel;
+    if (!channel) channel = await this.client.channels.fetch(this.channelId);
+
+    await channel.messages.clearReactions(this.id);
   }
 
   /** Gets the Channel object from cache */
