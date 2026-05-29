@@ -20,7 +20,10 @@ export class MessageCollector extends Collector<string, Message> {
   public total = 0;
   public processed = 0;
 
-  constructor(public channel: BaseChannel, options: MessageCollectorOptions = {}) {
+  constructor(
+    public channel: BaseChannel,
+    options: MessageCollectorOptions = {},
+  ) {
     super((channel as any).client, options);
     this.channelId = channel.id;
 

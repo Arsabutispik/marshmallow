@@ -222,8 +222,8 @@ export class TextChannel extends BaseChannel {
    * @returns The updated TextChannel
    * @example
    * await channel.setIcon("123");
-    * // Remove the channel icon
-    * await channel.setIcon(null);
+   * // Remove the channel icon
+   * await channel.setIcon(null);
    */
   public async setIcon(id: string | null): Promise<TextChannel> {
     await this.edit({ icon: id });

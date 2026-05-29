@@ -286,7 +286,7 @@ export class ChannelManager extends BaseManager<string, BaseChannel> {
       if (typeof msg === "string") return msg.replace(/[<#>]/g, "");
       if ("id" in msg) return msg.id;
       throw new TypeError("Invalid MessageResolvable provided. Expected a Message object or a string ID/Mention.");
-    })
+    });
 
     await this.client.rest.delete(`/channels/${id}/messages/bulk`, { messages: messageIds });
   }
