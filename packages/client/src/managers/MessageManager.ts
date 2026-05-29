@@ -187,9 +187,7 @@ export class MessageManager extends BaseManager<string, Message> {
    */
   public async react(message: MessageResolvable, reaction: string): Promise<void> {
     const id = this.resolveId(message);
-    await this.client.rest.put(
-      `/channels/${this.channel.id}/messages/${id}/reactions/${encodeURIComponent(reaction)}`,
-    );
+    await this.client.rest.put(`/channels/${this.channel.id}/messages/${id}/reactions/${encodeURIComponent(reaction)}`);
   }
 
   /**
