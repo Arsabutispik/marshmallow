@@ -4,6 +4,7 @@ import { Message, MessageOptions } from "../structures/Message";
 import type { Client } from "../client/Client";
 import * as util from "node:util";
 import { BaseManager } from "./BaseManager";
+import { UserResolvable } from "./UserManager";
 
 export type MessageResolvable = Message | string;
 
@@ -173,6 +174,68 @@ export class MessageManager extends BaseManager<string, Message> {
 
     const existing = this.cache.get(id);
     if (existing) existing.pinned = false;
+  }
+
+  /**
+   * React to a message
+   * @param message The MessageResolvable to react to.
+   * @param reaction The emoji to react with. Can be a Unicode emoji or a custom emoji ID.
+   * @throws {Error} If the API request fails.
+   * @example
+   * await channel.messages.react(messageId, "👍");
+   * await channel.messages.react(messageId, "customEmojiId");
+   */
+  public async react(message: MessageResolvable, reaction: string): Promise<void> {
+    const id = this.resolveId(message);
+    await this.client.rest.put(`/channels/${this.channel.id}/messages/${id}/reactions/${encodeURIComponent(reaction)}`);
+  }
+
+  /**
+   * Remove a reaction(s) from a message
+   * Requires ManageMessages if changing others' reactions.
+   * @param reaction The emoji to remove. Can be a unicode emoji or a custom emoji ID.
+   * @param message The MessageResolvable to remove the reaction from.
+   * @param userId The ID of the user whose reaction to remove. If not provided, removes the current user's reaction.
+   * @param removeAll Remove all reactions of this type.
+   * @throws {Error} If both userId and removeAll are provided, or if the API request fails.
+   * @example
+   * // Remove the current user's reaction
+   * await channel.messages.removeReaction(messageId, "👍");
+   * // Remove a specific user's reaction
+   * await channel.messages.removeReaction(messageId, "👍", userId);
+   * // Remove all reactions of this type
+   * await channel.messages.removeReaction(messageId, "👍", undefined, true);
+   */
+  public async removeReaction(
+    message: MessageResolvable,
+    reaction: string,
+    userId?: UserResolvable,
+    removeAll?: boolean,
+  ): Promise<void> {
+    const id = this.resolveId(message);
+    const targetUser = userId ? this.client.users.resolveId(userId) : undefined;
+
+    const params = new URLSearchParams();
+    if (targetUser) params.append("user_id", targetUser);
+    if (removeAll) params.append("remove_all", "true");
+
+    const queryString = params.toString();
+    const endpoint = `/channels/${this.channel.id}/messages/${id}/reactions/${encodeURIComponent(reaction)}${queryString ? `?${queryString}` : ""}`;
+
+    await this.client.rest.delete(endpoint);
+  }
+
+  /**
+   * Remove all reactions from a message
+   * Requires ManageMessages permission.
+   * @param message The MessageResolvable to clear reactions from.
+   * @throws {Error} If the API request fails.
+   * @example
+   * await channel.messages.clearReactions(messageId);
+   */
+  public async clearReactions(message: MessageResolvable): Promise<void> {
+    const id = this.resolveId(message);
+    await this.client.rest.delete(`/channels/${this.channel.id}/messages/${id}/reactions`);
   }
 
   [util.inspect.custom]() {
