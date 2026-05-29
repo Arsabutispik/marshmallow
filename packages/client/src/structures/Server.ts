@@ -7,6 +7,7 @@ import { RoleManager } from "../managers/RoleManager";
 import { ServerInviteManager } from "../managers/ServerInviteManager";
 import { ServerBanManager } from "../managers/ServerBanManager";
 import { ServerEditOptions } from "../managers/ServerManager";
+import { EmojiManager } from "../managers/EmojiManager";
 
 export interface Categories {
   channels: string[];
@@ -32,6 +33,7 @@ export class Server extends Base {
   public roles: RoleManager;
   public bans: ServerBanManager;
   public invites: ServerInviteManager;
+  public emojis: EmojiManager;
 
   constructor(client: Client, data: any) {
     super(client, data);
@@ -40,6 +42,7 @@ export class Server extends Base {
     this.roles = new RoleManager(client, this);
     this.bans = new ServerBanManager(this.client, this);
     this.invites = new ServerInviteManager(this.client, this);
+    this.emojis = new EmojiManager(this.client, this);
     this._patch(data);
   }
 
@@ -72,6 +75,13 @@ export class Server extends Base {
     if (data.roles !== undefined) {
       for (const [id, roleData] of Object.entries(data.roles)) {
         this.roles._add({ id, ...(roleData as any) });
+      }
+    }
+    if (data.emojis !== undefined) {
+      if (Array.isArray(data.emojis)) {
+        for (const emoji of data.emojis) {
+          this.emojis._add(emoji);
+        }
       }
     }
 

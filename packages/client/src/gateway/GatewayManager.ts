@@ -85,6 +85,19 @@ export class GatewayManager {
             }
           }
         }
+
+        if (payload.emojis) {
+          for (const rawEmoji of payload.emojis) {
+            const emoji = this.client.emojis._add(rawEmoji);
+            if (rawEmoji.parent && rawEmoji.parent.type === "Server") {
+              const server = this.client.servers.cache.get(rawEmoji.parent.id);
+              if (server) {
+                server.emojis._add(emoji);
+              }
+            }
+          }
+        }
+
         this.client.emit("ready", payload);
         break;
       }
@@ -156,6 +169,72 @@ export class GatewayManager {
           this.client.emit("messageDelete", { id: payload.id, channelId: payload.channel });
         }
 
+        break;
+      }
+
+      case "MessageReact": {
+        const channel = this.client.channels.cache.get(payload.channel_id);
+        const message = channel?.messages.cache.get(payload.id);
+
+        if (message) {
+          if (!message.reactions) message.reactions = {};
+          if (!message.reactions[payload.emoji_id]) {
+            message.reactions[payload.emoji_id] = [];
+          }
+          const reactions = message.reactions[payload.emoji_id];
+          if (reactions && !reactions.includes(payload.user_id)) {
+            reactions.push(payload.user_id);
+          }
+        }
+
+        this.client.emit(
+          "messageReact",
+          message || { id: payload.id, channelId: payload.channel_id },
+          payload.emoji_id,
+          payload.user_id,
+        );
+        break;
+      }
+
+      case "MessageUnreact": {
+        const channel = this.client.channels.cache.get(payload.channel_id);
+        const message = channel?.messages.cache.get(payload.id);
+
+        if (message && message.reactions && message.reactions[payload.emoji_id]) {
+          const reactions = message.reactions[payload.emoji_id];
+          if (reactions) {
+            message.reactions[payload.emoji_id] = reactions.filter(
+              (userId) => userId !== payload.user_id
+            );
+
+            if (message.reactions[payload.emoji_id]!.length === 0) {
+              delete message.reactions[payload.emoji_id];
+            }
+          }
+        }
+
+        this.client.emit(
+          "messageUnreact",
+          message || { id: payload.id, channelId: payload.channel_id },
+          payload.emoji_id,
+          payload.user_id,
+        );
+        break;
+      }
+
+      case "MessageRemoveReaction": {
+        const channel = this.client.channels.cache.get(payload.channel_id);
+        const message = channel?.messages.cache.get(payload.id);
+
+        if (message && message.reactions) {
+          delete message.reactions[payload.emoji_id];
+        }
+
+        this.client.emit(
+          "messageRemoveReaction",
+          message || { id: payload.id, channelId: payload.channel_id },
+          payload.emoji_id,
+        );
         break;
       }
 
@@ -246,6 +325,31 @@ export class GatewayManager {
           if (member) {
             server.members.cache.delete(payload.user);
             this.client.emit("serverMemberLeave", member);
+          }
+        }
+        break;
+      }
+
+      case "EmojiCreate": {
+        const emoji = this.client.emojis._add(payload);
+        if (payload.parent?.type === "Server") {
+          const server = this.client.servers.cache.get(payload.parent.id);
+          if (server) {
+            server.emojis._add(emoji);
+          }
+        }
+        break;
+      }
+
+      case "EmojiDelete": {
+        this.client.emojis.cache.delete(payload.id);
+
+        // Find which server has this emoji
+        for (const server of this.client.servers.cache.values()) {
+          const emoji = server.emojis.cache.get(payload.id);
+          if (emoji) {
+            server.emojis.cache.delete(payload.id);
+            break;
           }
         }
         break;

@@ -9,6 +9,8 @@ import { Attachment } from "./Attachment";
 import { Server } from "./Server";
 import { decodeTime } from "ulid";
 import { UserResolvable } from "../managers/UserManager";
+import { ReactionCollector, ReactionCollectorOptions } from "../utils/ReactionCollector";
+import { Collection } from "../utils/Collection";
 
 export interface MessageOptions {
   content?: string;
@@ -48,7 +50,7 @@ export class Message extends Base {
   public masquerade: Masquerade | null = null;
   public mentions: string[] = [];
   public pinned: boolean = false;
-  public reactions: any[] = [];
+  public reactions: Record<string, string[]> = {};
   public replies: string[] = [];
   public role_mentions: string[] = [];
 
@@ -187,6 +189,37 @@ export class Message extends Base {
     await channel.messages.clearReactions(this.id);
   }
 
+  /**
+   * Creates a ReactionCollector to collect reactions on this message.
+   * @param options The options for the collector.
+   * @returns A new ReactionCollector instance.
+   * @example
+   * const collector = message.createReactionCollector({ time: 15000 });
+   * collector.on('collect', (reaction) => console.log(`Collected ${reaction.emojiId} from ${reaction.userId}`));
+   * collector.on('end', (collected) => console.log(`Collected ${collected.size} items`));
+   */
+  public createReactionCollector(options?: ReactionCollectorOptions): ReactionCollector {
+    return new ReactionCollector(this, options);
+  }
+
+  /**
+   * Awaits reactions on this message.
+   * @param options The options for the collector.
+   * @returns A promise that resolves to a collection of reactions collected.
+   * @example
+   * // Await reactions
+   * const filter = (reaction) => reaction.emojiId === '👍' && reaction.userId === author.id;
+   * message.awaitReactions({ filter, max: 1, time: 60000 })
+   *   .then(collected => console.log(collected.size))
+   *   .catch(console.error);
+   */
+  public awaitReactions(options?: ReactionCollectorOptions): Promise<Collection<string, { emojiId: string; userId: string; message: Message | { id: string; channelId: string } }>> {
+    return new Promise((resolve) => {
+      const collector = this.createReactionCollector(options);
+      collector.once("end", (collected) => resolve(collected));
+    });
+  }
+
   /** Gets the Channel object from cache */
   public get channel(): BaseChannel | undefined {
     return this.client.channels.cache.get(this.channelId);
@@ -229,7 +262,9 @@ export class Message extends Base {
     if (data.pinned !== undefined) this.pinned = data.pinned;
     if (data.embeds !== undefined) this.embeds = data.embeds;
     if (data.flags !== undefined) this.flags = data.flags;
-    if (data.reactions !== undefined) this.reactions = data.reactions;
+    if (data.reactions !== undefined) {
+      this.reactions = Array.isArray(data.reactions) ? {} : data.reactions;
+    }
 
     if (data.interactions !== undefined) {
       if (data.interactions) {

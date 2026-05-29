@@ -11,12 +11,16 @@ import { User } from "../structures/User";
 import { ClientUser } from "../structures/ClientUser";
 import { Member } from "../structures/Member";
 import { SweeperManager, SweeperOptions } from "../managers/SweepManager";
+import { EmojiManager } from "../managers/EmojiManager";
 
 export interface ClientEvents {
   ready: [data: any];
   messageCreate: [message: Message];
   messageUpdate: [oldMessage: null | Message, newMessage: Message];
   messageDelete: [message: Message | { id: string; channelId: string }];
+  messageReact: [message: Message | { id: string; channelId: string }, emojiId: string, userId: string];
+  messageUnreact: [message: Message | { id: string; channelId: string }, emojiId: string, userId: string];
+  messageRemoveReaction: [message: Message | { id: string; channelId: string }, emojiId: string];
   error: [error: Error];
   debug: [message: string];
   raw: [data: any];
@@ -37,6 +41,7 @@ export interface ClientOptions {
     users?: number;
     servers?: number;
     channels?: number;
+    emojis?: number;
   };
 }
 
@@ -47,6 +52,7 @@ export class Client extends EventEmitter {
   public servers: ServerManager;
   public users: UserManager;
   public sweepers: SweeperManager;
+  public emojis: EmojiManager;
   public user: ClientUser | null = null;
 
   constructor(public options: ClientOptions = {}) {
@@ -56,6 +62,7 @@ export class Client extends EventEmitter {
     this.channels = new ChannelManager(this, options.cacheLimits?.channels);
     this.servers = new ServerManager(this, options.cacheLimits?.servers);
     this.users = new UserManager(this, options.cacheLimits?.users);
+    this.emojis = new EmojiManager(this, undefined, options.cacheLimits?.emojis);
 
     this.sweepers = new SweeperManager(this, options.sweepers ?? {});
   }
