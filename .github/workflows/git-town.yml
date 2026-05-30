@@ -1,0 +1,19 @@
+name: Git Town
+
+on:
+  pull_request:
+
+jobs:
+  git-town:
+    name: Display the branch stack
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && !startsWith(github.head_ref, 'release-please--') }}
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: git-town/action@v1
