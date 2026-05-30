@@ -15,23 +15,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup mise
+        uses: jdx/mise-action@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Check Formatting
-        run: pnpm run format:check
-
-      - name: Build Projects
-        run: pnpm run build
-
-      - name: Run Typecheck
-        run: pnpm run typecheck
+      - name: Run CI tasks
+        run: mise run ci

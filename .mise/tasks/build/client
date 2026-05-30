@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Build @stoatx/client"
+set -e
+
+pnpm --filter @stoatx/client build
