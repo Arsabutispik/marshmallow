@@ -8,6 +8,6 @@ export * from "./decorators";
 export * from "./registry";
 
 // Handler
-export { Client } from "./handler";
+export { Client, DefaultCooldownManager } from "./handler";
 export type { StoatxHandler } from "./handler";
 export * from "@stoatx/client";

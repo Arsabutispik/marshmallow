@@ -1,7 +1,60 @@
 import "reflect-metadata";
 import { CommandRegistry, RegisteredCommand } from "./registry";
-import type { CommandContext, CommandMetadata, StoatxDiscoveryOptions, StoatxHandlerOptions } from "./types";
+import type {
+  CommandContext,
+  CommandMetadata,
+  StoatxDiscoveryOptions,
+  StoatxHandlerOptions,
+  CooldownManager,
+} from "./types";
 import { Client as StoatClient, ClientEvents, Message } from "@stoatx/client";
+
+/**
+ * Default in-memory cooldown manager
+ */
+export class DefaultCooldownManager implements CooldownManager {
+  private readonly cooldowns: Map<string, Map<string, number>> = new Map();
+
+  check(ctx: CommandContext, metadata: CommandMetadata): boolean {
+    if (metadata.cooldown <= 0) return true;
+
+    const commandCooldowns = this.cooldowns.get(metadata.name);
+    if (!commandCooldowns) return true;
+
+    const expirationTime = commandCooldowns.get(ctx.authorId);
+    if (!expirationTime) return true;
+
+    if (Date.now() > expirationTime) {
+      commandCooldowns.delete(ctx.authorId);
+      return true;
+    }
+
+    return false;
+  }
+
+  getRemaining(ctx: CommandContext, metadata: CommandMetadata): number {
+    const commandCooldowns = this.cooldowns.get(metadata.name);
+    if (!commandCooldowns) return 0;
+
+    const userCooldown = commandCooldowns.get(ctx.authorId);
+    if (!userCooldown) return 0;
+
+    return Math.max(0, userCooldown - Date.now());
+  }
+
+  set(ctx: CommandContext, metadata: CommandMetadata): void {
+    if (!this.cooldowns.has(metadata.name)) {
+      this.cooldowns.set(metadata.name, new Map());
+    }
+
+    const commandCooldowns = this.cooldowns.get(metadata.name)!;
+    commandCooldowns.set(ctx.authorId, Date.now() + metadata.cooldown);
+  }
+
+  clear(): void {
+    this.cooldowns.clear();
+  }
+}
 
 /**
  * Client - An extended Client that integrates StoatxHandler directly
@@ -52,7 +105,7 @@ export class StoatxHandler {
   private readonly prefixResolver: string | ((ctx: { serverId?: string | undefined }) => string | Promise<string>);
   private readonly owners: Set<string>;
   private readonly registry: CommandRegistry;
-  private readonly cooldowns: Map<string, Map<string, number>> = new Map();
+  private readonly cooldownManager: CooldownManager;
   private readonly disableMentionPrefix: boolean;
   private readonly client: StoatClient;
   constructor(options: StoatxHandlerOptions) {
@@ -63,6 +116,7 @@ export class StoatxHandler {
     this.owners = new Set(options.owners ?? []);
     this.registry = new CommandRegistry(options.extensions);
     this.disableMentionPrefix = options.disableMentionPrefix ?? false;
+    this.cooldownManager = options.cooldownManager ?? new DefaultCooldownManager();
   }
 
   /**
@@ -278,8 +332,8 @@ export class StoatxHandler {
     }
 
     // Cooldown check
-    if (!this.checkCooldown(ctx.authorId, metadata)) {
-      const remaining = this.getRemainingCooldown(ctx.authorId, metadata);
+    if (!(await this.cooldownManager.check(ctx, metadata))) {
+      const remaining = await this.cooldownManager.getRemaining(ctx, metadata);
 
       // For method-based commands, check if instance has onCooldown
       if (typeof (instance as any).onCooldown === "function") {
@@ -293,7 +347,7 @@ export class StoatxHandler {
     try {
       // Set cooldown before execution to prevent concurrent executions
       if (metadata.cooldown > 0) {
-        this.setCooldown(ctx.authorId, metadata);
+        await this.cooldownManager.set(ctx, metadata);
       }
 
       await (instance as any)[methodName](ctx);
@@ -336,7 +390,9 @@ export class StoatxHandler {
    */
   async reload(): Promise<void> {
     this.registry.clear();
-    this.cooldowns.clear();
+    if (this.cooldownManager.clear) {
+      await this.cooldownManager.clear();
+    }
     if (this.commandsDir) {
       await this.registry.loadFromDirectory(this.commandsDir);
       return;
@@ -374,50 +430,5 @@ export class StoatxHandler {
       return this.prefixResolver({ serverId });
     }
     return this.prefixResolver;
-  }
-
-  /**
-   * Check if user is on cooldown
-   */
-  private checkCooldown(userId: string, metadata: CommandMetadata): boolean {
-    if (metadata.cooldown <= 0) return true;
-
-    const commandCooldowns = this.cooldowns.get(metadata.name);
-    if (!commandCooldowns) return true;
-
-    const expirationTime = commandCooldowns.get(userId);
-    if (!expirationTime) return true;
-
-    if (Date.now() > expirationTime) {
-      commandCooldowns.delete(userId);
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Get remaining cooldown time in ms
-   */
-  private getRemainingCooldown(userId: string, metadata: CommandMetadata): number {
-    const commandCooldowns = this.cooldowns.get(metadata.name);
-    if (!commandCooldowns) return 0;
-
-    const userCooldown = commandCooldowns.get(userId);
-    if (!userCooldown) return 0;
-
-    return Math.max(0, userCooldown - Date.now());
-  }
-
-  /**
-   * Set cooldown for a user
-   */
-  private setCooldown(userId: string, metadata: CommandMetadata): void {
-    if (!this.cooldowns.has(metadata.name)) {
-      this.cooldowns.set(metadata.name, new Map());
-    }
-
-    const commandCooldowns = this.cooldowns.get(metadata.name)!;
-    commandCooldowns.set(userId, Date.now() + metadata.cooldown);
   }
 }

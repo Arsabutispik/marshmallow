@@ -15,6 +15,7 @@ export function buildSimpleCommandMetadata(
     permissions: options.permissions ?? [],
     category: options.category ?? category ?? "uncategorized",
     cooldown: options.cooldown ?? 0,
+    ...(options.cooldownStorage !== undefined ? { cooldownStorage: options.cooldownStorage } : {}),
     nsfw: options.nsfw ?? false,
     ownerOnly: options.ownerOnly ?? false,
   };

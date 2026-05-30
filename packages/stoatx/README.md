@@ -94,6 +94,7 @@ Marks a method as a command.
   aliases: ['b'],        // Alternative names
   permissions: ['BanMembers'], // This is currently not implemented, but will be in the future
   cooldown: 5000,        // 5 seconds
+  cooldownStorage: "database", // A custom flag you can use in your CustomCooldownManager
   ownerOnly: false,
   nsfw: false,
 })
@@ -127,6 +128,47 @@ export class MyCommands implements StoatLifecycle {
     await ctx.reply("An error occurred");
   }
 }
+```
+
+## Custom Cooldowns
+
+By default, cooldowns are stored in memory. For persistent or distributed setups, you can implement the `CooldownManager` interface to store cooldowns in a database such as Redis, PostgreSQL or MongoDB.
+
+```typescript
+import { Client, CooldownManager, CommandContext, CommandMetadata, DefaultCooldownManager } from "stoatx";
+
+class MixedCooldownManager implements CooldownManager {
+  private memory = new DefaultCooldownManager();
+
+  async check(ctx: CommandContext, metadata: CommandMetadata): Promise<boolean> {
+    if (metadata.cooldownStorage === "database") {
+      // Return true if action is allowed in DB
+      return true;
+    }
+    return this.memory.check(ctx, metadata);
+  }
+
+  async getRemaining(ctx: CommandContext, metadata: CommandMetadata): Promise<number> {
+    if (metadata.cooldownStorage === "database") {
+      // Query remaining from DB
+      return 0;
+    }
+    return this.memory.getRemaining(ctx, metadata);
+  }
+
+  async set(ctx: CommandContext, metadata: CommandMetadata): Promise<void> {
+    if (metadata.cooldownStorage === "database") {
+      // Store cooldown expiration in your database
+      return;
+    }
+    this.memory.set(ctx, metadata);
+  }
+}
+
+const client = new Client({
+  prefix: "!",
+  cooldownManager: new MixedCooldownManager(),
+});
 ```
 
 ## Guards
