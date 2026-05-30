@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Build bot"
+set -e
+
+pnpm --filter @stoatx/bot build

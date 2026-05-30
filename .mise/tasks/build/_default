@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Build all packages"
+set -e
+
+pnpm -r build

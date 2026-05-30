@@ -109,10 +109,28 @@ pnpm add @stoatx/client
 Contributions to the Stoatx ecosystem are highly encouraged! Whether you are fixing bugs in the client, adding new features to the handler, or improving the documentation:
 
 1. Clone this repository.
-2. Run `pnpm install` at the root.
-3. Make your changes within the respective `packages/*` or `apps/*` directory.
-4. Run `pnpm build` to ensure `tsup` compiles your changes successfully.
-5. Submit a Pull Request.
+2. Install [mise](https://mise.jdx.dev/), which is used to manage Node and pnpm versions for this project.
+3. Run `mise install` to install the required tools.
+4. Run `mise run install:frozen` at the root to install project dependencies.
+5. Make your changes within the respective `packages/*` or `apps/*` directory.
+6. Use the provided tasks to ensure your changes compile successfully: `mise run build` (you can also use `mise run format:fix` or `mise run build:check`).
+7. Submit a Pull Request.
+
+### Available Tasks
+
+You can run these tasks using `mise run <task>` (or `mise <task>` for short):
+- `build`: Build all packages
+- `build:bot`: Build the bot application
+- `build:check`: Check types are compiling
+- `build:client`: Build `@stoatx/client` package
+- `build:stoatx`: Build `stoatx` package
+- `ci`: Task group for CI checks (runs install, build, typecheck, and formatting checks)
+- `format`: Check if the codebase is formatted correctly (CI)
+- `format:fix`: Format the codebase using Prettier
+- `install:frozen`: Install all dependencies (without updating the lockfile)
+- `install`: Install all dependencies (updates lockfile if necessary)
+
+You can also view all available tasks by running `mise tasks`.
 
 ---
 
