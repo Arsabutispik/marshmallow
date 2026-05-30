@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.5...stoatx-v0.6.0) (2026-05-30)
+
+
+### Features
+
+* implement custom cooldown manager for command execution ([#56](https://github.com/stoatx-ts/stoatx/issues/56)) ([fd31b21](https://github.com/stoatx-ts/stoatx/commit/fd31b21a64561cd4531c10c31e0f86faabe26011))
+
 ## [0.5.5](https://github.com/stoatx-ts/stoatx/compare/stoatx-v0.5.4...stoatx-v0.5.5) (2026-05-29)
 
 
