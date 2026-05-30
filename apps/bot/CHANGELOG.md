@@ -1,5 +1,19 @@
 # @stoatx/bot
 
+## [0.4.0](https://github.com/stoatx-ts/stoatx/compare/bot-v0.3.1...bot-v0.4.0) (2026-05-30)
+
+
+### Features
+
+* implement custom cooldown manager for command execution ([#56](https://github.com/stoatx-ts/stoatx/issues/56)) ([fd31b21](https://github.com/stoatx-ts/stoatx/commit/fd31b21a64561cd4531c10c31e0f86faabe26011))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * stoatx bumped to 0.6.0
+
 ## [0.3.1](https://github.com/stoatx-ts/stoatx/compare/bot-v0.3.0...bot-v0.3.1) (2026-05-29)
 
 
