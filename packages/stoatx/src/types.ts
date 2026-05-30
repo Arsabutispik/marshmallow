@@ -30,6 +30,8 @@ export interface SimpleCommandOptions {
   category?: string;
   /** Cooldown in milliseconds */
   cooldown?: number;
+  /** Storage strategy or identifier for cooldowns (e.g. "memory", "database") */
+  cooldownStorage?: string;
   /** Whether the command is NSFW only */
   nsfw?: boolean;
   /** Whether the command is owner only */
@@ -46,6 +48,7 @@ export interface CommandMetadata {
   permissions: Permission[];
   category: string;
   cooldown: number;
+  cooldownStorage?: string;
   nsfw: boolean;
   ownerOnly: boolean;
 }
@@ -86,7 +89,17 @@ export interface StoatLifecycle {
   onCooldown?(ctx: CommandContext, remaining: number): Promise<void> | void;
 
   /** Allows the class to contain other methods (such as your commands) */
-  [key: string]: any;
+  [method: string]: any;
+}
+
+/**
+ * Cooldown manager interface for custom cooldown storage (e.g., database)
+ */
+export interface CooldownManager {
+  check(ctx: CommandContext, metadata: CommandMetadata): boolean | Promise<boolean>;
+  getRemaining(ctx: CommandContext, metadata: CommandMetadata): number | Promise<number>;
+  set(ctx: CommandContext, metadata: CommandMetadata): void | Promise<void>;
+  clear?(): void | Promise<void>;
 }
 
 export interface StoatxGuard {
@@ -124,4 +137,6 @@ export interface StoatxHandlerOptions {
   extensions?: string[];
   /** Disable mention prefix support (default: false) */
   disableMentionPrefix?: boolean;
+  /** Custom cooldown manager */
+  cooldownManager?: CooldownManager;
 }
